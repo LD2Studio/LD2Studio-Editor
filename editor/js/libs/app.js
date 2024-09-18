@@ -29,7 +29,7 @@ var APP = {
 			if ( project.toneMappingExposure !== undefined ) renderer.toneMappingExposure = project.toneMappingExposure;
 
 			this.setScene( loader.parse( json.scene ) );
-			this.setCamera( loader.parse( json.camera ) );
+			this.setCamera( loader.parse( json.viewportCamera ) );
 
 			events = {
 				init: [],
