@@ -165,7 +165,7 @@ var APP = {
 
 		}
 
-		this.play = function () {
+		this.play = function ( physics ) {
 
 			startTime = prevTime = performance.now();
 
@@ -179,9 +179,12 @@ var APP = {
 
 			renderer.setAnimationLoop( animate );
 
+			physics.addScene( scene );
+			physics.start();
+
 		};
 
-		this.stop = function () {
+		this.stop = function ( physics ) {
 
 			document.removeEventListener( 'keydown', onKeyDown );
 			document.removeEventListener( 'keyup', onKeyUp );
@@ -192,6 +195,9 @@ var APP = {
 			dispatch( events.stop, arguments );
 
 			renderer.setAnimationLoop( null );
+
+			physics.stop();
+			physics.dispose();
 
 		};
 

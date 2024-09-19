@@ -61,7 +61,8 @@
 		<script type="module">
 
 			import * as THREE from 'three';
-
+			import { RapierPhysics } from 'three/addons/physics/Rapier.js';
+			
 			import { Editor } from './js/Editor.js';
 			import { Viewport } from './js/Viewport.js';
 			import { Toolbar } from './js/Toolbar.js';
@@ -75,6 +76,8 @@
 			window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
 
 			//
+			
+			const physics = await RapierPhysics();
 
 			const editor = new Editor();
 
@@ -90,7 +93,7 @@
 			const script = new Script( editor );
 			document.body.appendChild( script.dom );
 
-			const player = new Player( editor );
+			const player = new Player( editor, physics );
 			document.body.appendChild( player.dom );
 
 			const sidebar = new Sidebar( editor );
