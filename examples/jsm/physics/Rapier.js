@@ -82,6 +82,7 @@ async function RapierPhysics() {
            vertexColors: true
        })
    );
+   showDebug( false );
 
    const _vector = new Vector3();
    const _quaternion = new Quaternion();
@@ -210,6 +211,11 @@ async function RapierPhysics() {
        // console.log( rigidBodySet.getAll() ); // Should be empty
    }
 
+   function showDebug( value ) {
+
+       debugMesh.visible = value;
+
+   }
 
    //
 
@@ -280,7 +286,8 @@ async function RapierPhysics() {
        setMeshVelocity: setMeshVelocity,
        start: start,
        stop: stop,
-       dispose: dispose
+       dispose: dispose,
+       showDebug: showDebug
    };
 
 }
