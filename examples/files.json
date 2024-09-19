@@ -479,7 +479,8 @@
 		"physics_ammo_terrain",
 		"physics_ammo_volume",
 		"physics_jolt_instancing",
-		"physics_rapier_instancing"
+		"physics_rapier_instancing",
+		"physics_rapier_instanced_bodies"
 	],
 	"misc": [
 		"misc_animation_groups",
