@@ -480,7 +480,7 @@
 		"physics_ammo_volume",
 		"physics_jolt_instancing",
 		"physics_rapier_instancing",
-		"physics_rapier_instanced_bodies"
+		"ld2studio_rapier_instanced_bodies"
 	],
 	"misc": [
 		"misc_animation_groups",
