@@ -30,6 +30,12 @@ function getShape( geometry ) {
        const radius = parameters.radius !== undefined ? parameters.radius : 1;
        return RAPIER.ColliderDesc.ball( radius );
 
+   } else if ( geometry.type === 'CapsuleGeometry' ) {
+
+       const radius = parameters.radius !== undefined ? parameters.radius : 1;
+       const halfHeight = parameters.length !== undefined ? parameters.length / 2 : 0.5;
+       return RAPIER.ColliderDesc.capsule( halfHeight, radius );
+
    } else if ( geometry.type === 'BufferGeometry' ) {
 
        const vertices = [];
