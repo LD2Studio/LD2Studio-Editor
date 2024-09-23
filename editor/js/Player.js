@@ -1,7 +1,19 @@
 import { UIPanel } from './libs/ui.js';
 import { APP } from './libs/app.js';
 
-function Player( editor, physics ) {
+import { RapierPhysics } from 'three/addons/physics/Rapier.js';
+
+async function Player( editor ) {
+
+	// Physics
+
+	let physics;
+
+	if ( editor.config.getKey( 'project/physics/enable' ) === true ) {
+
+		physics = await RapierPhysics();
+
+	}
 
 	const signals = editor.signals;
 
@@ -33,6 +45,14 @@ function Player( editor, physics ) {
 
 		player.load( editor.toJSON() );
 		player.setSize( container.dom.clientWidth, container.dom.clientHeight );
+
+		if ( physics !== undefined ) {
+			 if (editor.config.getKey( 'project/physics/collisionShapes' ) === true) {
+				 physics.showDebug( true );
+			 } else {
+				 physics.showDebug( false );
+			 }
+		}
 		player.play( physics );
 
 	} );

@@ -5,6 +5,7 @@ import { SidebarProjectApp } from './Sidebar.Project.App.js';
 import { SidebarProjectRenderer } from './Sidebar.Project.Renderer.js';
 import { SidebarProjectImage } from './Sidebar.Project.Image.js';
 import { SidebarProjectVideo } from './Sidebar.Project.Video.js';
+import { SidebarProjectPhysics } from './Sidebar.Project.Physics.js';
 
 function SidebarProject( editor ) {
 
@@ -23,6 +24,8 @@ function SidebarProject( editor ) {
 		container.add( new SidebarProjectVideo( editor ) );
 
 	}
+
+	container.add( new SidebarProjectPhysics( editor ) );
 
 	return container;
 

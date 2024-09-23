@@ -21,6 +21,8 @@ function Config() {
 		'project/renderer/toneMapping': 0, // NoToneMapping
 		'project/renderer/toneMappingExposure': 1,
 
+		'project/physics/enable': false,
+
 		'settings/history': false,
 
 		'settings/shortcuts/translate': 'w',
