@@ -179,8 +179,12 @@ var APP = {
 
 			renderer.setAnimationLoop( animate );
 
-			physics.addScene( scene );
-			physics.start();
+			if ( physics !== undefined ) {
+
+				physics.addScene( scene );
+				physics.start();
+
+			}
 
 		};
 
@@ -196,8 +200,12 @@ var APP = {
 
 			renderer.setAnimationLoop( null );
 
-			physics.stop();
-			physics.dispose();
+			if (physics !== undefined ) {
+
+				physics.stop();
+				physics.dispose();
+				
+			}
 
 		};
 

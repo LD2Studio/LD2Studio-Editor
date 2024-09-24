@@ -368,6 +368,10 @@ function Strings( config ) {
 			'sidebar/project/duration': 'Duration',
 			'sidebar/project/render': 'Render',
 
+			'sidebar/project/physics': 'Physics',
+			'sidebar/project/physics/enable': 'Enable',
+			'sidebar/project/physics/collisionShapes': 'Collision Shapes',
+
 			'sidebar/settings': 'Settings',
 			'sidebar/settings/language': 'Language',
 
@@ -465,7 +469,7 @@ function Strings( config ) {
 			'menubar/add': 'Ajouter',
 			'menubar/add/group': 'Groupe',
 
-			'menubar/add/mesh': 'Maille',
+			'menubar/add/mesh': 'Maillage',
 			'menubar/add/mesh/plane': 'Plan',
 			'menubar/add/mesh/box': 'Cube',
 			'menubar/add/mesh/capsule': 'Capsule',
@@ -496,8 +500,8 @@ function Strings( config ) {
 
 			'menubar/status/autosave': 'enregistrement automatique',
 
-			'menubar/view': 'View',
-			'menubar/view/fullscreen': 'Fullscreen',
+			'menubar/view': 'Affichage',
+			'menubar/view/fullscreen': 'Plein écran',
 			'menubar/view/gridHelper': 'Assistant de grille',
 			'menubar/view/cameraHelpers': 'Aides à la caméra',
 			'menubar/view/lightHelpers': 'Aides Lumière',
@@ -507,7 +511,7 @@ function Strings( config ) {
 			'menubar/help/source_code': 'Code Source',
 			'menubar/help/icons': 'Icon Pack',
 			'menubar/help/about': 'A propos',
-			'menubar/help/manual': 'Manual',
+			'menubar/help/manual': 'Manuel',
 
 			'sidebar/animations': 'Animations',
 			'sidebar/animations/play': 'Play',
@@ -769,6 +773,10 @@ function Strings( config ) {
 			'sidebar/project/resolution': 'Resolution',
 			'sidebar/project/duration': 'Duration',
 			'sidebar/project/render': 'Render',
+
+			'sidebar/project/physics': 'Physiques',
+			'sidebar/project/physics/enable': 'Activation',
+			'sidebar/project/physics/collisionShapes': 'Formes de collision',
 
 			'sidebar/settings': 'Paramètres',
 			'sidebar/settings/language': 'Langue',
@@ -1172,6 +1180,10 @@ function Strings( config ) {
 			'sidebar/project/duration': '时长',
 			'sidebar/project/render': '渲染',
 
+			'sidebar/project/physics': 'Physics',
+			'sidebar/project/physics/enable': 'Enable',
+			'sidebar/project/physics/collisionShapes': 'Collision Shapes',
+
 			'sidebar/settings': '设置',
 			'sidebar/settings/language': '语言',
 
@@ -1568,6 +1580,10 @@ function Strings( config ) {
 			'sidebar/project/image': '画像',
 			'sidebar/project/image/samples': 'サンプル',
 			'sidebar/project/video': '動画',
+
+			'sidebar/project/physics': 'Physics',
+			'sidebar/project/physics/enable': 'Enable',
+			'sidebar/project/physics/collisionShapes': 'CollisionShapes',
 
 			'sidebar/project/shading': 'シェーディング',
 			'sidebar/project/resolution': '解像度',
@@ -1974,6 +1990,10 @@ function Strings( config ) {
 			'sidebar/project/resolution': '해상도',
 			'sidebar/project/duration': '길이',
 			'sidebar/project/render': '렌더',
+
+			'sidebar/project/physics': 'Physics',
+			'sidebar/project/physics/enable': 'Enable',
+			'sidebar/project/physics/collisionShapes': 'Collision Shapes',
 	
 			'sidebar/settings': '설정',
 			'sidebar/settings/language': '언어',

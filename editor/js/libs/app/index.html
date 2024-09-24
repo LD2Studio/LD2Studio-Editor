@@ -29,8 +29,12 @@
 
 			import * as THREE from 'three';
 			import { APP } from './js/app.js';
+			/* physics library */
 
 			window.THREE = THREE; // Used by APP Scripts.
+
+			let physics;
+			/* loading physics library */
 
 			var loader = new THREE.FileLoader();
 			loader.load( 'app.json', function ( text ) {
@@ -38,7 +42,7 @@
 				var player = new APP.Player();
 				player.load( JSON.parse( text ) );
 				player.setSize( window.innerWidth, window.innerHeight );
-				player.play();
+				player.play( physics );
 
 				document.body.appendChild( player.dom );
 
