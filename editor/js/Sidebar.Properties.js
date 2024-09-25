@@ -4,6 +4,7 @@ import { SidebarObject } from './Sidebar.Object.js';
 import { SidebarGeometry } from './Sidebar.Geometry.js';
 import { SidebarMaterial } from './Sidebar.Material.js';
 import { SidebarScript } from './Sidebar.Script.js';
+import { SidebarPhysics } from './Sidebar.Physics.js';
 
 function SidebarProperties( editor ) {
 
@@ -16,6 +17,7 @@ function SidebarProperties( editor ) {
 	container.addTab( 'geometryTab', strings.getKey( 'sidebar/properties/geometry' ), new SidebarGeometry( editor ) );
 	container.addTab( 'materialTab', strings.getKey( 'sidebar/properties/material' ), new SidebarMaterial( editor ) );
 	container.addTab( 'scriptTab', strings.getKey( 'sidebar/properties/script' ), new SidebarScript( editor ) );
+	container.addTab( 'physicsTab', strings.getKey( 'sidebar/properties/physics' ), new SidebarPhysics( editor ) );
 	container.select( 'objectTab' );
 
 	function getTabByTabId( tabs, tabId ) {
@@ -31,6 +33,7 @@ function SidebarProperties( editor ) {
 	const geometryTab = getTabByTabId( container.tabs, 'geometryTab' );
 	const materialTab = getTabByTabId( container.tabs, 'materialTab' );
 	const scriptTab = getTabByTabId( container.tabs, 'scriptTab' );
+	const physicsTab = getTabByTabId( container.tabs, 'physicsTab' );
 
 	function toggleTabs( object ) {
 
@@ -43,6 +46,8 @@ function SidebarProperties( editor ) {
 		materialTab.setHidden( ! object.material );
 
 		scriptTab.setHidden( object === editor.camera );
+
+		physicsTab.setHidden( object === editor.camera || object.isScene );
 
 		// set active tab
 
@@ -57,6 +62,10 @@ function SidebarProperties( editor ) {
 		} else if ( container.selected === 'scriptTab' ) {
 
 			container.select( scriptTab.isHidden() ? 'objectTab' : 'scriptTab' );
+
+		} else if ( container.selected === 'physicsTab' ) {
+
+			container.select( physicsTab.isHidden() ? 'objectTab' : 'physicsTab' );
 
 		}
 

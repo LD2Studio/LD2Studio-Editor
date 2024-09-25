@@ -121,6 +121,7 @@ function Strings( config ) {
 			'sidebar/properties/geometry': 'Geometry',
 			'sidebar/properties/material': 'Material',
 			'sidebar/properties/script': 'Script',
+			'sidebar/properties/physics': 'Physics',
 
 			'sidebar/object/type': 'Type',
 			'sidebar/object/new': 'New',
@@ -345,6 +346,8 @@ function Strings( config ) {
 			'sidebar/script/edit': 'Edit',
 			'sidebar/script/remove': 'Remove',
 
+			'sidebar/physics/enable': 'Enable',
+
 			'sidebar/project': 'Project',
 			'sidebar/project/antialias': 'Antialias',
 			'sidebar/project/shadows': 'Shadows',
@@ -529,6 +532,7 @@ function Strings( config ) {
 			'sidebar/properties/geometry': 'Géométrie',
 			'sidebar/properties/material': 'Matériaux',
 			'sidebar/properties/script': 'Script',
+			'sidebar/properties/physics': 'Physiques',
 
 			'sidebar/object/type': 'Type',
 			'sidebar/object/new': 'Nouveau',
@@ -753,6 +757,8 @@ function Strings( config ) {
 			'sidebar/script/edit': 'Editer',
 			'sidebar/script/remove': 'Supprimer',
 
+			'sidebar/physics/enable': 'Activation',
+
 			'sidebar/project': 'Projet',
 			'sidebar/project/antialias': 'Anticrénelage',
 			'sidebar/project/shadows': 'Ombres',
@@ -937,6 +943,7 @@ function Strings( config ) {
 			'sidebar/properties/geometry': '几何组件',
 			'sidebar/properties/material': '材质组件',
 			'sidebar/properties/script': '脚本',
+			'sidebar/properties/physics': 'Physics',
 
 			'sidebar/object/type': '类型',
 			'sidebar/object/new': '更新',
@@ -1161,6 +1168,8 @@ function Strings( config ) {
 			'sidebar/script/edit': '编辑',
 			'sidebar/script/remove': '删除',
 
+			'sidebar/physics/enable': 'Enable',
+
 			'sidebar/project': '项目',
 			'sidebar/project/antialias': '抗锯齿',
 			'sidebar/project/shadows': '阴影',
@@ -1345,6 +1354,7 @@ function Strings( config ) {
 			'sidebar/properties/geometry': 'ジオメトリ',
 			'sidebar/properties/material': 'マテリアル',
 			'sidebar/properties/script': 'スクリプト',
+			'sidebar/properties/physics': 'Physics',
 
 			'sidebar/object/type': 'タイプ',
 			'sidebar/object/new': '新規',
@@ -1569,6 +1579,8 @@ function Strings( config ) {
 			'sidebar/script/edit': '編集',
 			'sidebar/script/remove': '削除',
 
+			'sidebar/physics/enable': 'Enable',
+
 			'sidebar/project': 'プロジェクト',
 			'sidebar/project/antialias': 'アンチエイリアス',
 			'sidebar/project/shadows': 'シャドウ',
@@ -1752,6 +1764,7 @@ function Strings( config ) {
 			'sidebar/properties/geometry': '지오메트리',
 			'sidebar/properties/material': '머티리얼',
 			'sidebar/properties/script': '스크립트',
+			'sidebar/properties/physics': 'Physics',
 	
 			'sidebar/object/type': '타입',
 			'sidebar/object/new': '새로 만들기',
@@ -1975,6 +1988,8 @@ function Strings( config ) {
 			'sidebar/script/new': '새로 만들기',
 			'sidebar/script/edit': '편집',
 			'sidebar/script/remove': '삭제',
+
+			'sidebar/physics/enable': 'Enable',
 	
 			'sidebar/project': '프로젝트',
 			'sidebar/project/antialias': '안티앨리어싱',
