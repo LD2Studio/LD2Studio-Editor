@@ -24,7 +24,8 @@ function SidebarProjectApp( editor ) {
 	const titleRow = new UIRow();
 	const title = new UIInput( config.getKey( 'project/title' ) ).setLeft( '100px' ).setWidth( '150px' ).onChange( function () {
 
-		config.setKey( 'project/title', this.getValue() );
+		editor.projectProperties[ 'title' ] = this.getValue();
+		signals.projectPropertiesChanged.dispatch();
 
 	} );
 
@@ -38,7 +39,8 @@ function SidebarProjectApp( editor ) {
 	const editableRow = new UIRow();
 	const editable = new UICheckbox( config.getKey( 'project/editable' ) ).setLeft( '100px' ).onChange( function () {
 
-		config.setKey( 'project/editable', this.getValue() );
+		editor.projectProperties[ 'editable' ] = this.getValue();
+		signals.projectPropertiesChanged.dispatch();
 
 	} );
 
@@ -98,7 +100,7 @@ function SidebarProjectApp( editor ) {
 
 		//
 
-		const title = config.getKey( 'project/title' );
+		const title = editor.projectProperties[ 'title' ];
 
 		const manager = new THREE.LoadingManager( function () {
 
@@ -117,11 +119,11 @@ function SidebarProjectApp( editor ) {
 
 			let editButton = '';
 
-			if ( config.getKey( 'project/editable' ) ) {
+			if ( editor.projectProperties[ 'editable' ] === true ) {
 
 				editButton = [
 					'			let button = document.createElement( \'a\' );',
-					'			button.href = \'https://threejs.org/editor/#file=\' + location.href.split( \'/\' ).slice( 0, - 1 ).join( \'/\' ) + \'/app.json\';',
+					'			button.href = \'https://ld2studio.github.io/LD2Studio-Editor/editor/#file=\' + location.href.split( \'/\' ).slice( 0, - 1 ).join( \'/\' ) + \'/app.json\';',
 					'			button.style.cssText = \'position: absolute; bottom: 20px; right: 20px; padding: 10px 16px; color: #fff; border: 1px solid #fff; border-radius: 20px; text-decoration: none;\';',
 					'			button.target = \'_blank\';',
 					'			button.textContent = \'EDIT\';',
@@ -172,9 +174,24 @@ function SidebarProjectApp( editor ) {
 	signals.editorCleared.add( function () {
 
 		title.setValue( '' );
-		config.setKey( 'project/title', '' );
+		editor.projectProperties[ 'title' ] = '';
+
+		editable.setValue( false );
+		editor.projectProperties[ 'editable' ] = false;
 
 	} );
+
+	signals.projectPropertiesAdded.add( function ( properties ) {
+
+		title.setValue( properties.title );
+		editor.projectProperties[ 'title' ] = properties.title;
+
+		editable.setValue( properties.editable );
+		editor.projectProperties[ 'editable' ] = properties.editable;
+
+		signals.projectPropertiesChanged.dispatch();
+
+	});
 
 	return container;
 

@@ -11,8 +11,6 @@ function Config() {
 
 		'autosave': true,
 
-		'project/title': '',
-		'project/editable': false,
 		'project/vr': false,
 
 		'project/physics/enable': false,

@@ -622,6 +622,7 @@ Editor.prototype = {
 		this.materials = {};
 		this.textures = {};
 		this.scripts = {};
+		this.projectProperties = {};
 
 		this.materialsRefCounter.clear();
 
@@ -711,6 +712,9 @@ Editor.prototype = {
 				shadowType: this.projectProperties.shadowType,
 				toneMapping: this.projectProperties.toneMapping,
 				toneMappingExposure: this.projectProperties.toneMappingExposure,
+
+				title: this.projectProperties.title,
+				editable: this.projectProperties.editable,
 			},
 			camera: this.camera.toJSON(),
 			viewportCamera: this.viewportCamera.toJSON(),

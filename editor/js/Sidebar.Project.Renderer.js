@@ -21,7 +21,7 @@ function SidebarProjectRenderer( editor ) {
 
 	antialiasRow.add( new UIText( strings.getKey( 'sidebar/project/antialias' ) ).setClass( 'Label' ) );
 
-	const antialiasBoolean = new UIBoolean( config.getKey( 'project/renderer/antialias' ) ).onChange( createRenderer );
+	const antialiasBoolean = new UIBoolean( false ).onChange( createRenderer );
 	antialiasRow.add( antialiasBoolean );
 
 	// Shadows
@@ -31,7 +31,7 @@ function SidebarProjectRenderer( editor ) {
 
 	shadowsRow.add( new UIText( strings.getKey( 'sidebar/project/shadows' ) ).setClass( 'Label' ) );
 
-	const shadowsBoolean = new UIBoolean( config.getKey( 'project/renderer/shadows' ) ).onChange( updateShadows );
+	const shadowsBoolean = new UIBoolean( false ).onChange( updateShadows );
 	shadowsRow.add( shadowsBoolean );
 
 	const shadowTypeSelect = new UISelect().setOptions( {
@@ -40,7 +40,7 @@ function SidebarProjectRenderer( editor ) {
 		2: 'PCF Soft',
 		//	3: 'VSM'
 	} ).setWidth( '125px' ).onChange( updateShadows );
-	shadowTypeSelect.setValue( config.getKey( 'project/renderer/shadowType' ) );
+	shadowTypeSelect.setValue( 1 );
 	shadowsRow.add( shadowTypeSelect );
 
 	function updateShadows() {
@@ -73,7 +73,7 @@ function SidebarProjectRenderer( editor ) {
 		6: 'AgX',
 		7: 'Neutral'
 	} ).setWidth( '120px' ).onChange( updateToneMapping );
-	toneMappingSelect.setValue( config.getKey( 'project/renderer/toneMapping' ) );
+	toneMappingSelect.setValue( 0 );
 	toneMappingRow.add( toneMappingSelect );
 
 	const toneMappingExposure = new UINumber( config.getKey( 'project/renderer/toneMappingExposure' ) );
