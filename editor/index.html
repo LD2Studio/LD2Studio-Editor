@@ -90,7 +90,7 @@
 			const script = new Script( editor );
 			document.body.appendChild( script.dom );
 
-			const player = await Player( editor );
+			const player = new Player( editor );
 			document.body.appendChild( player.dom );
 
 			const sidebar = new Sidebar( editor );

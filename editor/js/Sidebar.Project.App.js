@@ -181,17 +181,14 @@ function SidebarProjectApp( editor ) {
 
 	} );
 
-	signals.projectPropertiesAdded.add( function ( properties ) {
+	signals.refreshSidebarProject.add( function () {
 
-		title.setValue( properties.title );
-		editor.project.app[ 'title' ] = properties.title;
+		if ( editor.project.app === undefined ) return;
+		
+		title.setValue( editor.project.app[ 'title' ] );
+		editable.setValue( editor.project.app[ 'editable' ] );
 
-		editable.setValue( properties.editable );
-		editor.project.app[ 'editable' ] = properties.editable;
-
-		signals.projectPropertiesChanged.dispatch();
-
-	});
+	} );
 
 	return container;
 

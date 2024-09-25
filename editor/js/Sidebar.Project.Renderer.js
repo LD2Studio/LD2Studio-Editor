@@ -20,8 +20,17 @@ function SidebarProjectRenderer( editor ) {
 
 	antialiasRow.add( new UIText( strings.getKey( 'sidebar/project/antialias' ) ).setClass( 'Label' ) );
 
-	const antialiasBoolean = new UIBoolean( false ).onChange( createRenderer );
+	const antialiasBoolean = new UIBoolean( false ).onChange( updateAntialias );
 	antialiasRow.add( antialiasBoolean );
+
+	function updateAntialias() {
+
+		createRenderer();
+
+		editor.project.renderer[ 'antialias' ] = antialiasBoolean.getValue();
+		signals.projectPropertiesChanged.dispatch();
+
+	}
 
 	// Shadows
 
@@ -107,12 +116,8 @@ function SidebarProjectRenderer( editor ) {
 		currentRenderer.toneMapping = parseFloat( toneMappingSelect.getValue() );
 		currentRenderer.toneMappingExposure = toneMappingExposure.getValue();
 
-		editor.project.renderer[ 'antialias' ] = antialiasBoolean.getValue();
-
 		signals.rendererCreated.dispatch( currentRenderer );
 		signals.rendererUpdated.dispatch();
-
-		signals.projectPropertiesChanged.dispatch();
 
 	}
 
@@ -147,24 +152,16 @@ function SidebarProjectRenderer( editor ) {
 
 	} );
 
-	signals.projectPropertiesAdded.add( function ( properties ) {
+	signals.refreshSidebarProject.add( function () {
 
-		antialiasBoolean.setValue( properties.antialias );
-		editor.project.renderer[ 'antialias' ] = properties.antialias;
-
-		shadowsBoolean.setValue( properties.shadows );
-		editor.project.renderer[ 'shadows' ] = properties.shadows;
-
-		shadowTypeSelect.setValue( properties.shadowType );
-		editor.project.renderer[ 'shadowType' ] = properties.shadowType;
-
-		toneMappingSelect.setValue( properties.toneMapping );
-		editor.project.renderer[ 'toneMapping' ] = properties.toneMapping;
-
-		toneMappingExposure.setValue( properties.toneMappingExposure );
-		editor.project.renderer[ 'toneMappingExposure' ] = properties.toneMappingExposure;
-
-		toneMappingExposure.setDisplay( properties.toneMapping === 0 ? 'none' : '' );
+		if ( editor.project.renderer === undefined ) return;
+		
+		antialiasBoolean.setValue( editor.project.renderer.antialias );
+		shadowsBoolean.setValue( editor.project.renderer.shadows );
+		shadowTypeSelect.setValue( editor.project.renderer.shadowType );
+		toneMappingSelect.setValue( editor.project.renderer.toneMapping );
+		toneMappingExposure.setValue( editor.project.renderer.toneMappingExposure );
+		toneMappingExposure.setDisplay( editor.project.renderer.toneMapping === 0 ? 'none' : '' );
 		
 		createRenderer();
 

@@ -13,8 +13,6 @@ function Config() {
 
 		'project/vr': false,
 
-		'project/physics/enable': false,
-
 		'settings/history': false,
 
 		'settings/shortcuts/translate': 'w',
