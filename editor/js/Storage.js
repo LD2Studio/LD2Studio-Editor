@@ -57,6 +57,8 @@ function Storage() {
 
 				callback( event.target.result );
 
+				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Loaded state from IndexedDB.' );
+
 			};
 
 		},

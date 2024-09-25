@@ -80,6 +80,9 @@ function Editor() {
 		scriptChanged: new Signal(),
 		scriptRemoved: new Signal(),
 
+		projectPropertiesAdded: new Signal(),
+		projectPropertiesChanged: new Signal(),
+
 		windowResize: new Signal(),
 
 		showHelpersChanged: new Signal(),
@@ -117,6 +120,7 @@ function Editor() {
 	this.materials = {};
 	this.textures = {};
 	this.scripts = {};
+	this.projectProperties = {};
 
 	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
 
@@ -663,6 +667,8 @@ Editor.prototype = {
 
 		}
 
+		this.signals.projectPropertiesAdded.dispatch( json.project );
+
 	},
 
 	toJSON: function () {
@@ -700,10 +706,11 @@ Editor.prototype = {
 
 			metadata: {},
 			project: {
-				shadows: this.config.getKey( 'project/renderer/shadows' ),
-				shadowType: this.config.getKey( 'project/renderer/shadowType' ),
-				toneMapping: this.config.getKey( 'project/renderer/toneMapping' ),
-				toneMappingExposure: this.config.getKey( 'project/renderer/toneMappingExposure' )
+				antialias: this.projectProperties.antialias,
+				shadows: this.projectProperties.shadows,
+				shadowType: this.projectProperties.shadowType,
+				toneMapping: this.projectProperties.toneMapping,
+				toneMappingExposure: this.projectProperties.toneMappingExposure,
 			},
 			camera: this.camera.toJSON(),
 			viewportCamera: this.viewportCamera.toJSON(),

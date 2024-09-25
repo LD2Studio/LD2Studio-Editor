@@ -15,12 +15,6 @@ function Config() {
 		'project/editable': false,
 		'project/vr': false,
 
-		'project/renderer/antialias': true,
-		'project/renderer/shadows': true,
-		'project/renderer/shadowType': 1, // PCF
-		'project/renderer/toneMapping': 0, // NoToneMapping
-		'project/renderer/toneMappingExposure': 1,
-
 		'project/physics/enable': false,
 
 		'settings/history': false,
