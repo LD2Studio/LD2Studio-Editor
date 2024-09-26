@@ -5,7 +5,6 @@ import { UIBoolean } from './libs/ui.three.js';
 
 function SidebarProjectRenderer( editor ) {
 
-	const config = editor.config;
 	const signals = editor.signals;
 	const strings = editor.strings;
 
@@ -134,13 +133,17 @@ function SidebarProjectRenderer( editor ) {
 
 		shadowsBoolean.setValue( currentRenderer.shadowMap.enabled );
 		shadowTypeSelect.setValue( currentRenderer.shadowMap.type );
-		updateShadows();
+		editor.project.renderer[ 'shadows' ] = shadowsBoolean.getValue();
+		editor.project.renderer[ 'shadowType' ] = parseFloat( shadowTypeSelect.getValue() );
+
 		toneMappingSelect.setValue( currentRenderer.toneMapping );
 		toneMappingExposure.setValue( currentRenderer.toneMappingExposure );
 		toneMappingExposure.setDisplay( currentRenderer.toneMapping === 0 ? 'none' : '' );
-		updateToneMapping();
+		editor.project.renderer[ 'toneMapping' ] = parseFloat( toneMappingSelect.getValue() );
+		editor.project.renderer[ 'toneMappingExposure' ] = parseFloat( toneMappingExposure.getValue() );
 
 		signals.rendererUpdated.dispatch();
+		signals.projectPropertiesChanged.dispatch();
 
 	} );
 

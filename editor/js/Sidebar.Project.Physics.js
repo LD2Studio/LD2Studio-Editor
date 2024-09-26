@@ -5,6 +5,7 @@ import { UIPanel, UIRow, UIText, UICheckbox } from './libs/ui.js';
 function SidebarProjectPhysics( editor ) {
 
     const config = editor.config;
+    const signals = editor.signals;
     const strings = editor.strings;
 
     const container = new UIPanel();
@@ -21,8 +22,8 @@ function SidebarProjectPhysics( editor ) {
         // .setLeft( '100px' )
         .onChange( function ( ) {
            
-            config.setKey( 'project/physics/enable', this.getValue() );
-            // editor.signals.configChanged.dispatch();
+            editor.project.physics[ 'enable' ] = this.getValue();
+            signals.projectPropertiesChanged.dispatch();
         }
     );
 
@@ -39,8 +40,8 @@ function SidebarProjectPhysics( editor ) {
         // .setLeft( '100px' )
         .onChange( function ( ) {
            
-            config.setKey( 'project/physics/collisionShapes', this.getValue() );
-            // editor.signals.configChanged.dispatch();
+            editor.project.physics[ 'collisionShapes' ] = this.getValue();
+            signals.projectPropertiesChanged.dispatch();
         }
     );
 
@@ -49,6 +50,30 @@ function SidebarProjectPhysics( editor ) {
     );
     collisionShapesRow.add( collisionShapes );
     container.add( collisionShapesRow );
+
+    // Signals
+
+    signals.editorCleared.add( function () {
+
+        enable.setValue( false );
+        editor.project.physics[ 'enable' ] = false;
+
+        collisionShapes.setValue( false );
+        editor.project.physics[ 'collisionShapes' ] = false;
+
+    } );
+
+    signals.projectPropertiesAdded.add( function ( project ) {
+
+        enable.setValue( project.physics.enable );
+        editor.project.physics[ 'enable' ] = project.physics.enable;
+
+        collisionShapes.setValue( project.physics.collisionShapes );
+        editor.project.physics[ 'collisionShapes' ] = project.physics.collisionShapes;
+
+        signals.projectPropertiesChanged.dispatch();
+
+    } );
 
 
     return container;

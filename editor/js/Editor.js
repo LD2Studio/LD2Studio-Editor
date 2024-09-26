@@ -123,6 +123,7 @@ function Editor() {
 	this.project = {
 		renderer: {},
 		app: {},
+		physics: {}
 	};
 
 	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
@@ -627,6 +628,7 @@ Editor.prototype = {
 		this.scripts = {};
 		this.project.renderer = {};
 		this.project.app = {};
+		this.project.physics = {};
 
 		this.materialsRefCounter.clear();
 
@@ -719,6 +721,10 @@ Editor.prototype = {
 
 				title: this.project.app.title,
 				editable: this.project.app.editable,
+				physics: {
+					enable: this.project.physics.enable,
+					collisionShapes: this.project.physics.collisionShapes,
+				}
 			},
 			camera: this.camera.toJSON(),
 			viewportCamera: this.viewportCamera.toJSON(),
