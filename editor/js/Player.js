@@ -5,17 +5,11 @@ import { RapierPhysics } from 'three/addons/physics/Rapier.js';
 
 async function Player( editor ) {
 
+	const signals = editor.signals;
+
 	// Physics
 
 	let physics;
-
-	if ( editor.config.getKey( 'project/physics/enable' ) === true ) {
-
-		physics = await RapierPhysics();
-
-	}
-
-	const signals = editor.signals;
 
 	const container = new UIPanel();
 	container.setId( 'player' );
@@ -47,7 +41,7 @@ async function Player( editor ) {
 		player.setSize( container.dom.clientWidth, container.dom.clientHeight );
 
 		if ( physics !== undefined ) {
-			 if (editor.config.getKey( 'project/physics/collisionShapes' ) === true) {
+			 if (editor.project.physics.collisionShapes === true) {
 				 physics.showDebug( true );
 			 } else {
 				 physics.showDebug( false );
@@ -63,6 +57,19 @@ async function Player( editor ) {
 
 		player.stop( physics );
 		player.dispose();
+
+	} );
+
+	signals.projectPropertiesAdded.add( async function ( project ) {
+
+		// console.log( project );
+
+		if ( project.physics.enable === true ) {
+
+			physics = await RapierPhysics();
+			// console.log( physics );
+	
+		}
 
 	} );
 

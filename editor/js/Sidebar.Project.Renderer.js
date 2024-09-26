@@ -5,7 +5,6 @@ import { UIBoolean } from './libs/ui.three.js';
 
 function SidebarProjectRenderer( editor ) {
 
-	const config = editor.config;
 	const signals = editor.signals;
 	const strings = editor.strings;
 
@@ -21,7 +20,7 @@ function SidebarProjectRenderer( editor ) {
 
 	antialiasRow.add( new UIText( strings.getKey( 'sidebar/project/antialias' ) ).setClass( 'Label' ) );
 
-	const antialiasBoolean = new UIBoolean( config.getKey( 'project/renderer/antialias' ) ).onChange( createRenderer );
+	const antialiasBoolean = new UIBoolean( false ).onChange( createRenderer );
 	antialiasRow.add( antialiasBoolean );
 
 	// Shadows
@@ -31,7 +30,7 @@ function SidebarProjectRenderer( editor ) {
 
 	shadowsRow.add( new UIText( strings.getKey( 'sidebar/project/shadows' ) ).setClass( 'Label' ) );
 
-	const shadowsBoolean = new UIBoolean( config.getKey( 'project/renderer/shadows' ) ).onChange( updateShadows );
+	const shadowsBoolean = new UIBoolean( false ).onChange( updateShadows );
 	shadowsRow.add( shadowsBoolean );
 
 	const shadowTypeSelect = new UISelect().setOptions( {
@@ -40,7 +39,7 @@ function SidebarProjectRenderer( editor ) {
 		2: 'PCF Soft',
 		//	3: 'VSM'
 	} ).setWidth( '125px' ).onChange( updateShadows );
-	shadowTypeSelect.setValue( config.getKey( 'project/renderer/shadowType' ) );
+	shadowTypeSelect.setValue( 1 );
 	shadowsRow.add( shadowTypeSelect );
 
 	function updateShadows() {
@@ -49,6 +48,11 @@ function SidebarProjectRenderer( editor ) {
 		currentRenderer.shadowMap.type = parseFloat( shadowTypeSelect.getValue() );
 
 		signals.rendererUpdated.dispatch();
+
+		editor.project.renderer[ 'shadows' ] = shadowsBoolean.getValue();
+		editor.project.renderer[ 'shadowType' ] = parseFloat( shadowTypeSelect.getValue() );
+
+		signals.projectPropertiesChanged.dispatch();
 
 	}
 
@@ -68,10 +72,10 @@ function SidebarProjectRenderer( editor ) {
 		6: 'AgX',
 		7: 'Neutral'
 	} ).setWidth( '120px' ).onChange( updateToneMapping );
-	toneMappingSelect.setValue( config.getKey( 'project/renderer/toneMapping' ) );
+	toneMappingSelect.setValue( 0 );
 	toneMappingRow.add( toneMappingSelect );
 
-	const toneMappingExposure = new UINumber( config.getKey( 'project/renderer/toneMappingExposure' ) );
+	const toneMappingExposure = new UINumber( 1.00 );
 	toneMappingExposure.setDisplay( toneMappingSelect.getValue() === '0' ? 'none' : '' );
 	toneMappingExposure.setWidth( '30px' ).setMarginLeft( '10px' );
 	toneMappingExposure.setRange( 0, 10 );
@@ -86,6 +90,11 @@ function SidebarProjectRenderer( editor ) {
 		currentRenderer.toneMappingExposure = toneMappingExposure.getValue();
 		signals.rendererUpdated.dispatch();
 
+		editor.project.renderer[ 'toneMapping' ] = parseFloat( toneMappingSelect.getValue() );
+		editor.project.renderer[ 'toneMappingExposure' ] = parseFloat( toneMappingExposure.getValue() );
+
+		signals.projectPropertiesChanged.dispatch();
+
 	}
 
 	//
@@ -98,8 +107,12 @@ function SidebarProjectRenderer( editor ) {
 		currentRenderer.toneMapping = parseFloat( toneMappingSelect.getValue() );
 		currentRenderer.toneMappingExposure = toneMappingExposure.getValue();
 
+		editor.project.renderer[ 'antialias' ] = antialiasBoolean.getValue();
+
 		signals.rendererCreated.dispatch( currentRenderer );
 		signals.rendererUpdated.dispatch();
+
+		signals.projectPropertiesChanged.dispatch();
 
 	}
 
@@ -109,31 +122,51 @@ function SidebarProjectRenderer( editor ) {
 	// Signals
 
 	signals.editorCleared.add( function () {
-
-		currentRenderer.shadowMap.enabled = true;
+		
+		currentRenderer.shadowMap.enabled = false;
 		currentRenderer.shadowMap.type = THREE.PCFShadowMap;
 		currentRenderer.toneMapping = THREE.NoToneMapping;
 		currentRenderer.toneMappingExposure = 1;
 
+		antialiasBoolean.setValue( false );
+		editor.project.renderer[ 'antialias' ] = false;
+
 		shadowsBoolean.setValue( currentRenderer.shadowMap.enabled );
 		shadowTypeSelect.setValue( currentRenderer.shadowMap.type );
+		editor.project.renderer[ 'shadows' ] = shadowsBoolean.getValue();
+		editor.project.renderer[ 'shadowType' ] = parseFloat( shadowTypeSelect.getValue() );
+
 		toneMappingSelect.setValue( currentRenderer.toneMapping );
 		toneMappingExposure.setValue( currentRenderer.toneMappingExposure );
 		toneMappingExposure.setDisplay( currentRenderer.toneMapping === 0 ? 'none' : '' );
+		editor.project.renderer[ 'toneMapping' ] = parseFloat( toneMappingSelect.getValue() );
+		editor.project.renderer[ 'toneMappingExposure' ] = parseFloat( toneMappingExposure.getValue() );
 
 		signals.rendererUpdated.dispatch();
+		signals.projectPropertiesChanged.dispatch();
 
 	} );
 
-	signals.rendererUpdated.add( function () {
+	signals.projectPropertiesAdded.add( function ( properties ) {
 
-		config.setKey(
-			'project/renderer/antialias', antialiasBoolean.getValue(),
-			'project/renderer/shadows', shadowsBoolean.getValue(),
-			'project/renderer/shadowType', parseFloat( shadowTypeSelect.getValue() ),
-			'project/renderer/toneMapping', parseFloat( toneMappingSelect.getValue() ),
-			'project/renderer/toneMappingExposure', toneMappingExposure.getValue()
-		);
+		antialiasBoolean.setValue( properties.antialias );
+		editor.project.renderer[ 'antialias' ] = properties.antialias;
+
+		shadowsBoolean.setValue( properties.shadows );
+		editor.project.renderer[ 'shadows' ] = properties.shadows;
+
+		shadowTypeSelect.setValue( properties.shadowType );
+		editor.project.renderer[ 'shadowType' ] = properties.shadowType;
+
+		toneMappingSelect.setValue( properties.toneMapping );
+		editor.project.renderer[ 'toneMapping' ] = properties.toneMapping;
+
+		toneMappingExposure.setValue( properties.toneMappingExposure );
+		editor.project.renderer[ 'toneMappingExposure' ] = properties.toneMappingExposure;
+
+		toneMappingExposure.setDisplay( properties.toneMapping === 0 ? 'none' : '' );
+		
+		createRenderer();
 
 	} );
 

@@ -80,6 +80,9 @@ function Editor() {
 		scriptChanged: new Signal(),
 		scriptRemoved: new Signal(),
 
+		projectPropertiesAdded: new Signal(),
+		projectPropertiesChanged: new Signal(),
+
 		windowResize: new Signal(),
 
 		showHelpersChanged: new Signal(),
@@ -117,6 +120,11 @@ function Editor() {
 	this.materials = {};
 	this.textures = {};
 	this.scripts = {};
+	this.project = {
+		renderer: {},
+		app: {},
+		physics: {}
+	};
 
 	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
 
@@ -618,6 +626,9 @@ Editor.prototype = {
 		this.materials = {};
 		this.textures = {};
 		this.scripts = {};
+		this.project.renderer = {};
+		this.project.app = {};
+		this.project.physics = {};
 
 		this.materialsRefCounter.clear();
 
@@ -663,6 +674,8 @@ Editor.prototype = {
 
 		}
 
+		this.signals.projectPropertiesAdded.dispatch( json.project );
+
 	},
 
 	toJSON: function () {
@@ -700,10 +713,18 @@ Editor.prototype = {
 
 			metadata: {},
 			project: {
-				shadows: this.config.getKey( 'project/renderer/shadows' ),
-				shadowType: this.config.getKey( 'project/renderer/shadowType' ),
-				toneMapping: this.config.getKey( 'project/renderer/toneMapping' ),
-				toneMappingExposure: this.config.getKey( 'project/renderer/toneMappingExposure' )
+				antialias: this.project.renderer.antialias,
+				shadows: this.project.renderer.shadows,
+				shadowType: this.project.renderer.shadowType,
+				toneMapping: this.project.renderer.toneMapping,
+				toneMappingExposure: this.project.renderer.toneMappingExposure,
+
+				title: this.project.app.title,
+				editable: this.project.app.editable,
+				physics: {
+					enable: this.project.physics.enable,
+					collisionShapes: this.project.physics.collisionShapes,
+				}
 			},
 			camera: this.camera.toJSON(),
 			viewportCamera: this.viewportCamera.toJSON(),
