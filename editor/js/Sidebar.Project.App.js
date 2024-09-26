@@ -24,7 +24,7 @@ function SidebarProjectApp( editor ) {
 	const titleRow = new UIRow();
 	const title = new UIInput( config.getKey( 'project/title' ) ).setLeft( '100px' ).setWidth( '150px' ).onChange( function () {
 
-		editor.projectProperties[ 'title' ] = this.getValue();
+		editor.project.app[ 'title' ] = this.getValue();
 		signals.projectPropertiesChanged.dispatch();
 
 	} );
@@ -39,7 +39,7 @@ function SidebarProjectApp( editor ) {
 	const editableRow = new UIRow();
 	const editable = new UICheckbox( config.getKey( 'project/editable' ) ).setLeft( '100px' ).onChange( function () {
 
-		editor.projectProperties[ 'editable' ] = this.getValue();
+		editor.project.app[ 'editable' ] = this.getValue();
 		signals.projectPropertiesChanged.dispatch();
 
 	} );
@@ -100,7 +100,7 @@ function SidebarProjectApp( editor ) {
 
 		//
 
-		const title = editor.projectProperties[ 'title' ];
+		const title = editor.project.app[ 'title' ];
 
 		const manager = new THREE.LoadingManager( function () {
 
@@ -119,7 +119,7 @@ function SidebarProjectApp( editor ) {
 
 			let editButton = '';
 
-			if ( editor.projectProperties[ 'editable' ] === true ) {
+			if ( editor.project.app[ 'editable' ] === true ) {
 
 				editButton = [
 					'			let button = document.createElement( \'a\' );',
@@ -174,20 +174,20 @@ function SidebarProjectApp( editor ) {
 	signals.editorCleared.add( function () {
 
 		title.setValue( '' );
-		editor.projectProperties[ 'title' ] = '';
+		editor.project.app[ 'title' ] = '';
 
 		editable.setValue( false );
-		editor.projectProperties[ 'editable' ] = false;
+		editor.project.app[ 'editable' ] = false;
 
 	} );
 
 	signals.projectPropertiesAdded.add( function ( properties ) {
 
 		title.setValue( properties.title );
-		editor.projectProperties[ 'title' ] = properties.title;
+		editor.project.app[ 'title' ] = properties.title;
 
 		editable.setValue( properties.editable );
-		editor.projectProperties[ 'editable' ] = properties.editable;
+		editor.project.app[ 'editable' ] = properties.editable;
 
 		signals.projectPropertiesChanged.dispatch();
 

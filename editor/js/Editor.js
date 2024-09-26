@@ -120,7 +120,10 @@ function Editor() {
 	this.materials = {};
 	this.textures = {};
 	this.scripts = {};
-	this.projectProperties = {};
+	this.project = {
+		renderer: {},
+		app: {},
+	};
 
 	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
 
@@ -622,7 +625,8 @@ Editor.prototype = {
 		this.materials = {};
 		this.textures = {};
 		this.scripts = {};
-		this.projectProperties = {};
+		this.project.renderer = {};
+		this.project.app = {};
 
 		this.materialsRefCounter.clear();
 
@@ -707,14 +711,14 @@ Editor.prototype = {
 
 			metadata: {},
 			project: {
-				antialias: this.projectProperties.antialias,
-				shadows: this.projectProperties.shadows,
-				shadowType: this.projectProperties.shadowType,
-				toneMapping: this.projectProperties.toneMapping,
-				toneMappingExposure: this.projectProperties.toneMappingExposure,
+				antialias: this.project.renderer.antialias,
+				shadows: this.project.renderer.shadows,
+				shadowType: this.project.renderer.shadowType,
+				toneMapping: this.project.renderer.toneMapping,
+				toneMappingExposure: this.project.renderer.toneMappingExposure,
 
-				title: this.projectProperties.title,
-				editable: this.projectProperties.editable,
+				title: this.project.app.title,
+				editable: this.project.app.editable,
 			},
 			camera: this.camera.toJSON(),
 			viewportCamera: this.viewportCamera.toJSON(),
