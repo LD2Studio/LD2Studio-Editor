@@ -24,8 +24,8 @@ var APP = {
 			var project = json.project;
 
 			if ( project.shadows !== undefined ) renderer.shadowMap.enabled = project.shadows;
-			if ( project.shadowType !== undefined ) renderer.shadowMap.type = parseFloat(project.shadowType);
-			if ( project.toneMapping !== undefined ) renderer.toneMapping = parseFloat(project.toneMapping);
+			if ( project.shadowType !== undefined ) renderer.shadowMap.type = project.shadowType;
+			if ( project.toneMapping !== undefined ) renderer.toneMapping = project.toneMapping;
 			if ( project.toneMappingExposure !== undefined ) renderer.toneMappingExposure = project.toneMappingExposure;
 
 			this.setScene( loader.parse( json.scene ) );

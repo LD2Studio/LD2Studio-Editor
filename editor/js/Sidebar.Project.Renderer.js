@@ -51,7 +51,7 @@ function SidebarProjectRenderer( editor ) {
 		signals.rendererUpdated.dispatch();
 
 		editor.project.renderer[ 'shadows' ] = shadowsBoolean.getValue();
-		editor.project.renderer[ 'shadowType' ] = shadowTypeSelect.getValue();
+		editor.project.renderer[ 'shadowType' ] = parseFloat( shadowTypeSelect.getValue() );
 
 		signals.projectPropertiesChanged.dispatch();
 
@@ -76,7 +76,7 @@ function SidebarProjectRenderer( editor ) {
 	toneMappingSelect.setValue( 0 );
 	toneMappingRow.add( toneMappingSelect );
 
-	const toneMappingExposure = new UINumber( config.getKey( 'project/renderer/toneMappingExposure' ) );
+	const toneMappingExposure = new UINumber( 1.00 );
 	toneMappingExposure.setDisplay( toneMappingSelect.getValue() === '0' ? 'none' : '' );
 	toneMappingExposure.setWidth( '30px' ).setMarginLeft( '10px' );
 	toneMappingExposure.setRange( 0, 10 );
@@ -91,8 +91,8 @@ function SidebarProjectRenderer( editor ) {
 		currentRenderer.toneMappingExposure = toneMappingExposure.getValue();
 		signals.rendererUpdated.dispatch();
 
-		editor.project.renderer[ 'toneMapping' ] = toneMappingSelect.getValue();
-		editor.project.renderer[ 'toneMappingExposure' ] = toneMappingExposure.getValue();
+		editor.project.renderer[ 'toneMapping' ] = parseFloat( toneMappingSelect.getValue() );
+		editor.project.renderer[ 'toneMappingExposure' ] = parseFloat( toneMappingExposure.getValue() );
 
 		signals.projectPropertiesChanged.dispatch();
 
