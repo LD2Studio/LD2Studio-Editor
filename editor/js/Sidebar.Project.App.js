@@ -147,6 +147,23 @@ function SidebarProjectApp( editor ) {
 			content = content.replace( '/* importing physics library */', physicsImport );
 			content = content.replace( '/* loading physics library */', physicsLoading );
 
+			let addonsImport = '';
+			let wrappingAddons = '';
+
+			if ( editor.project.addons !== undefined ) {
+
+				for ( const addon of editor.project.addons ) {
+
+					addonsImport += "import { " + addon.name + " } from './js/addons/" + addon.path + "';\n";
+
+					wrappingAddons += "addons." + addon.name + " = " + addon.name + ";\n\t\t\t";
+
+				}
+			}
+
+			content = content.replace( '/* importing addons */', addonsImport );
+			content = content.replace( '/* wrapping addons */', wrappingAddons );
+
 
 			toZip[ 'index.html' ] = strToU8( content );
 
@@ -169,6 +186,21 @@ function SidebarProjectApp( editor ) {
 				toZip[ 'js/Rapier.js' ] = strToU8( content );
 	
 			} );
+		}
+
+		if ( editor.project.addons !== undefined ) {
+
+			const ADDONS_PATH = '../../examples/jsm/';
+
+			for ( const addon of editor.project.addons ) {
+
+				loader.load( ADDONS_PATH + addon.path, function ( content ) {
+
+					toZip[ 'js/addons/' + addon.path ] = strToU8( content );
+
+				} );
+
+			}
 		}
 
 	} );
