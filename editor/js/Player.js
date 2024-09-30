@@ -3,7 +3,7 @@ import { APP } from './libs/app.js';
 
 import { RapierPhysics } from 'three/addons/physics/Rapier.js';
 
-async function Player( editor ) {
+function Player( editor ) {
 
 	const signals = editor.signals;
 
@@ -60,16 +60,36 @@ async function Player( editor ) {
 
 	} );
 
-	signals.projectPropertiesAdded.add( async function ( project ) {
-
-		// console.log( project );
-
-		if ( project.physics.enable === true ) {
+	signals.physicsEnabled.add( async function ( enable) {
+		
+		if ( enable === true ) {
 
 			physics = await RapierPhysics();
-			// console.log( physics );
 	
 		}
+		else {
+
+			physics = undefined;
+
+		}
+
+	});
+
+	signals.addonsUpdated.add( function () {
+
+		const ADDONS_PATH = '../../examples/jsm/';
+		let addons = {};
+		const projectAddons = editor.project.addons;
+
+		projectAddons.forEach( async (addon) => {
+			
+			const module = await import( ADDONS_PATH + addon.path );
+			
+			addons[ addon.name ] = module[ addon.name ];
+
+		});
+
+		player.addons = addons;
 
 	} );
 

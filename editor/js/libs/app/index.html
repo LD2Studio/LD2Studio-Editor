@@ -21,7 +21,8 @@
 		<script type="importmap">
 			{
 				"imports": {
-					"three": "./js/three.module.js"
+					"three": "./js/three.module.js",
+					"addons": "./js/addons"
 				}
 			}
 		</script>
@@ -29,17 +30,22 @@
 
 			import * as THREE from 'three';
 			import { APP } from './js/app.js';
-			/* physics library */
+			/* importing physics library */
+			/* importing addons */
 
 			window.THREE = THREE; // Used by APP Scripts.
 
 			let physics;
 			/* loading physics library */
 
-			var loader = new THREE.FileLoader();
+			let addons = {};
+			/* wrapping addons */
+
+			const loader = new THREE.FileLoader();
 			loader.load( 'app.json', function ( text ) {
 
-				var player = new APP.Player();
+				let player = new APP.Player();
+				player.addons = addons;
 				player.load( JSON.parse( text ) );
 				player.setSize( window.innerWidth, window.innerHeight );
 				player.play( physics );

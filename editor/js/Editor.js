@@ -80,7 +80,6 @@ function Editor() {
 		scriptChanged: new Signal(),
 		scriptRemoved: new Signal(),
 
-		projectPropertiesAdded: new Signal(),
 		projectPropertiesChanged: new Signal(),
 
 		windowResize: new Signal(),
@@ -88,6 +87,7 @@ function Editor() {
 		showHelpersChanged: new Signal(),
 		refreshSidebarObject3D: new Signal(),
 		refreshSidebarEnvironment: new Signal(),
+		refreshSidebarProject: new Signal(),
 		historyChanged: new Signal(),
 
 		viewportCameraChanged: new Signal(),
@@ -96,6 +96,10 @@ function Editor() {
 		intersectionsDetected: new Signal(),
 
 		pathTracerUpdated: new Signal(),
+
+		physicsEnabled: new Signal(),
+
+		addonsUpdated: new Signal(),
 
 	};
 
@@ -123,7 +127,8 @@ function Editor() {
 	this.project = {
 		renderer: {},
 		app: {},
-		physics: {}
+		physics: {},
+		addons: [],
 	};
 
 	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
@@ -629,6 +634,7 @@ Editor.prototype = {
 		this.project.renderer = {};
 		this.project.app = {};
 		this.project.physics = {};
+		this.project.addons = [];
 
 		this.materialsRefCounter.clear();
 
@@ -662,10 +668,20 @@ Editor.prototype = {
 
 		this.history.fromJSON( json.history );
 		this.scripts = json.scripts;
+		this.project.renderer = json.project.renderer ?? {};
+		this.project.app = json.project.app ?? {};
+		this.project.physics = json.project.physics ?? {};
+		this.project.addons = json.project.addons ?? [];
 
 		this.setScene( await loader.parseAsync( json.scene ) );
-		const viewportCamera = await loader.parseAsync( json.viewportCamera );
-		this.setViewportCamera( viewportCamera.uuid );
+
+		// restore viewport camera
+		if ( json.viewportCamera !== undefined ) {
+			
+			const viewportCamera = await loader.parseAsync( json.viewportCamera );
+			this.setViewportCamera( viewportCamera.uuid );
+			
+		}
 
 		if ( json.environment === 'ModelViewer' ) {
 
@@ -674,7 +690,9 @@ Editor.prototype = {
 
 		}
 
-		this.signals.projectPropertiesAdded.dispatch( json.project );
+		this.signals.refreshSidebarProject.dispatch();
+		this.signals.physicsEnabled.dispatch( this.project.physics.enable ?? false);
+		this.signals.addonsUpdated.dispatch();
 
 	},
 
@@ -713,18 +731,23 @@ Editor.prototype = {
 
 			metadata: {},
 			project: {
-				antialias: this.project.renderer.antialias,
-				shadows: this.project.renderer.shadows,
-				shadowType: this.project.renderer.shadowType,
-				toneMapping: this.project.renderer.toneMapping,
-				toneMappingExposure: this.project.renderer.toneMappingExposure,
-
-				title: this.project.app.title,
-				editable: this.project.app.editable,
+				renderer: {
+					antialias: this.project.renderer.antialias ?? false,
+					shadows: this.project.renderer.shadows ?? false,
+					shadowType: this.project.renderer.shadowType ?? 1,
+					toneMapping: this.project.renderer.toneMapping ?? 0,
+					toneMappingExposure: this.project.renderer.toneMappingExposure ?? 1.0,
+				},
+				app: {
+					editable: this.project.app.editable,
+					title: this.project.app.title,
+				},
 				physics: {
 					enable: this.project.physics.enable,
 					collisionShapes: this.project.physics.collisionShapes,
-				}
+				},
+
+				addons: this.project.addons,
 			},
 			camera: this.camera.toJSON(),
 			viewportCamera: this.viewportCamera.toJSON(),

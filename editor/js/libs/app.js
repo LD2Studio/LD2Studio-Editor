@@ -19,14 +19,16 @@ var APP = {
 		this.width = 500;
 		this.height = 500;
 
+		this.addons = {};
+
 		this.load = function ( json ) {
 
 			var project = json.project;
 
-			if ( project.shadows !== undefined ) renderer.shadowMap.enabled = project.shadows;
-			if ( project.shadowType !== undefined ) renderer.shadowMap.type = project.shadowType;
-			if ( project.toneMapping !== undefined ) renderer.toneMapping = project.toneMapping;
-			if ( project.toneMappingExposure !== undefined ) renderer.toneMappingExposure = project.toneMappingExposure;
+			if ( project.renderer.shadows !== undefined ) renderer.shadowMap.enabled = project.renderer.shadows;
+			if ( project.renderer.shadowType !== undefined ) renderer.shadowMap.type = project.renderer.shadowType;
+			if ( project.renderer.toneMapping !== undefined ) renderer.toneMapping = project.renderer.toneMapping;
+			if ( project.renderer.toneMappingExposure !== undefined ) renderer.toneMappingExposure = project.renderer.toneMappingExposure;
 
 			this.setScene( loader.parse( json.scene ) );
 			this.setCamera( loader.parse( json.viewportCamera ) );

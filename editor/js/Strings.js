@@ -372,6 +372,8 @@ function Strings( config ) {
 			'sidebar/project/physics/enable': 'Enable',
 			'sidebar/project/physics/collisionShapes': 'Collision Shapes',
 
+			'sidebar/project/addons': 'Addons',
+
 			'sidebar/settings': 'Settings',
 			'sidebar/settings/language': 'Language',
 
@@ -777,6 +779,8 @@ function Strings( config ) {
 			'sidebar/project/physics': 'Physiques',
 			'sidebar/project/physics/enable': 'Activation',
 			'sidebar/project/physics/collisionShapes': 'Formes de collision',
+
+			'sidebar/project/addons': 'Extensions',
 
 			'sidebar/settings': 'Paramètres',
 			'sidebar/settings/language': 'Langue',
@@ -1184,6 +1188,8 @@ function Strings( config ) {
 			'sidebar/project/physics/enable': 'Enable',
 			'sidebar/project/physics/collisionShapes': 'Collision Shapes',
 
+			'sidebar/project/addons': 'Addons',
+
 			'sidebar/settings': '设置',
 			'sidebar/settings/language': '语言',
 
@@ -1584,6 +1590,8 @@ function Strings( config ) {
 			'sidebar/project/physics': 'Physics',
 			'sidebar/project/physics/enable': 'Enable',
 			'sidebar/project/physics/collisionShapes': 'CollisionShapes',
+
+			'sidebar/project/addons': 'Addons',
 
 			'sidebar/project/shading': 'シェーディング',
 			'sidebar/project/resolution': '解像度',
@@ -1994,6 +2002,8 @@ function Strings( config ) {
 			'sidebar/project/physics': 'Physics',
 			'sidebar/project/physics/enable': 'Enable',
 			'sidebar/project/physics/collisionShapes': 'Collision Shapes',
+
+			'sidebar/project/addons': 'Addons',
 	
 			'sidebar/settings': '설정',
 			'sidebar/settings/language': '언어',

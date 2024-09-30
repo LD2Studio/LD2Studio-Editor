@@ -134,15 +134,36 @@ function SidebarProjectApp( editor ) {
 
 			content = content.replace( '\t\t\t/* edit button */', editButton );
 
-			if ( editor.config.getKey( 'project/physics/enable' ) === true ) {
+			let physicsImport = '';
+			let physicsLoading = '';
 
-				const physicsImport = "import { RapierPhysics } from './js/Rapier.js';";
-				content = content.replace( '/* physics library */', physicsImport );
+			if ( editor.project.physics !== undefined && editor.project.physics.enable === true ) {
 
-				content = content.replace(
-					'/* loading physics library */',
-					"physics = await RapierPhysics();" );
+				physicsImport = "import { RapierPhysics } from './js/Rapier.js';";
+				physicsLoading = "physics = await RapierPhysics();"
+				
 			}
+
+			content = content.replace( '/* importing physics library */', physicsImport );
+			content = content.replace( '/* loading physics library */', physicsLoading );
+
+			let addonsImport = '';
+			let wrappingAddons = '';
+
+			if ( editor.project.addons !== undefined ) {
+
+				for ( const addon of editor.project.addons ) {
+
+					addonsImport += "import { " + addon.name + " } from './js/addons/" + addon.path + "';\n";
+
+					wrappingAddons += "addons." + addon.name + " = " + addon.name + ";\n\t\t\t";
+
+				}
+			}
+
+			content = content.replace( '/* importing addons */', addonsImport );
+			content = content.replace( '/* wrapping addons */', wrappingAddons );
+
 
 			toZip[ 'index.html' ] = strToU8( content );
 
@@ -157,13 +178,29 @@ function SidebarProjectApp( editor ) {
 			toZip[ 'js/three.module.js' ] = strToU8( content );
 
 		} );
-		if ( editor.config.getKey( 'project/physics/enable' ) === true ) {
+		
+		if ( editor.project.physics !== undefined && editor.project.physics.enable === true ) {
 			
 			loader.load( '../examples/jsm/physics/Rapier.js', function ( content ) {
 	
 				toZip[ 'js/Rapier.js' ] = strToU8( content );
 	
 			} );
+		}
+
+		if ( editor.project.addons !== undefined ) {
+
+			const ADDONS_PATH = '../../examples/jsm/';
+
+			for ( const addon of editor.project.addons ) {
+
+				loader.load( ADDONS_PATH + addon.path, function ( content ) {
+
+					toZip[ 'js/addons/' + addon.path ] = strToU8( content );
+
+				} );
+
+			}
 		}
 
 	} );
@@ -181,17 +218,14 @@ function SidebarProjectApp( editor ) {
 
 	} );
 
-	signals.projectPropertiesAdded.add( function ( properties ) {
+	signals.refreshSidebarProject.add( function () {
 
-		title.setValue( properties.title );
-		editor.project.app[ 'title' ] = properties.title;
+		if ( editor.project.app === undefined ) return;
+		
+		title.setValue( editor.project.app[ 'title' ] );
+		editable.setValue( editor.project.app[ 'editable' ] );
 
-		editable.setValue( properties.editable );
-		editor.project.app[ 'editable' ] = properties.editable;
-
-		signals.projectPropertiesChanged.dispatch();
-
-	});
+	} );
 
 	return container;
 

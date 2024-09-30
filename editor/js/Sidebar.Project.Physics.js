@@ -24,6 +24,8 @@ function SidebarProjectPhysics( editor ) {
            
             editor.project.physics[ 'enable' ] = this.getValue();
             signals.projectPropertiesChanged.dispatch();
+            signals.physicsEnabled.dispatch( this.getValue() );
+
         }
     );
 
@@ -63,18 +65,14 @@ function SidebarProjectPhysics( editor ) {
 
     } );
 
-    signals.projectPropertiesAdded.add( function ( project ) {
+    signals.refreshSidebarProject.add( function () {
 
-        enable.setValue( project.physics.enable );
-        editor.project.physics[ 'enable' ] = project.physics.enable;
-
-        collisionShapes.setValue( project.physics.collisionShapes );
-        editor.project.physics[ 'collisionShapes' ] = project.physics.collisionShapes;
-
-        signals.projectPropertiesChanged.dispatch();
+        if ( editor.project.physics === undefined ) return;
+        
+        enable.setValue( editor.project.physics.enable );
+        collisionShapes.setValue( editor.project.physics.collisionShapes );
 
     } );
-
 
     return container;
 
