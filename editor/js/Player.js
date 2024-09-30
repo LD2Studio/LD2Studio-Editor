@@ -77,13 +77,14 @@ function Player( editor ) {
 
 	signals.addonsUpdated.add( function () {
 
+		const ADDONS_PATH = '../../examples/jsm/';
 		let addons = {};
 		const projectAddons = editor.project.addons;
 
 		projectAddons.forEach( async (addon) => {
 			
-			const module = await import( addon.path );
-
+			const module = await import( ADDONS_PATH + addon.path );
+			
 			addons[ addon.name ] = module[ addon.name ];
 
 		});

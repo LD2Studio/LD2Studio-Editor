@@ -134,15 +134,19 @@ function SidebarProjectApp( editor ) {
 
 			content = content.replace( '\t\t\t/* edit button */', editButton );
 
-			if ( editor.config.getKey( 'project/physics/enable' ) === true ) {
+			let physicsImport = '';
+			let physicsLoading = '';
 
-				const physicsImport = "import { RapierPhysics } from './js/Rapier.js';";
-				content = content.replace( '/* physics library */', physicsImport );
+			if ( editor.project.physics !== undefined && editor.project.physics.enable === true ) {
 
-				content = content.replace(
-					'/* loading physics library */',
-					"physics = await RapierPhysics();" );
+				physicsImport = "import { RapierPhysics } from './js/Rapier.js';";
+				physicsLoading = "physics = await RapierPhysics();"
+				
 			}
+
+			content = content.replace( '/* importing physics library */', physicsImport );
+			content = content.replace( '/* loading physics library */', physicsLoading );
+
 
 			toZip[ 'index.html' ] = strToU8( content );
 
@@ -157,7 +161,8 @@ function SidebarProjectApp( editor ) {
 			toZip[ 'js/three.module.js' ] = strToU8( content );
 
 		} );
-		if ( editor.config.getKey( 'project/physics/enable' ) === true ) {
+		
+		if ( editor.project.physics !== undefined && editor.project.physics.enable === true ) {
 			
 			loader.load( '../examples/jsm/physics/Rapier.js', function ( content ) {
 	
