@@ -115,28 +115,36 @@ async function RapierPhysics() {
        scene.add( debugMesh );
    }
 
-   function addMesh( mesh,
-        { mass = 0, restitution = 0, mode = 'dynamic' } = {} ) {
-       
-       const shape = getShape( mesh.geometry );
+    function addMesh( mesh,
+        { mass = 0, restitution = 0, mode = 'none' } = {} ) {
 
-       if ( shape === null ) return;
+        if ( mode === 'none' ) return;
 
-       shape.setMass( mass );
-       shape.setRestitution( restitution );
+        if ( ![ 'dynamic', 'fixed', 'kinematic_position', 'kinematic_velocity' ].includes( mode ) ) {
 
-       const body = mesh.isInstancedMesh
-                           ? createInstancedBody( mesh, mass, shape, mode )
-                           : createBody( mesh.position, mesh.quaternion, mass, shape, mode );
+            console.warn( `[${ mesh.name }] Unknown physics mode: ${ mode }` );
+            return;
+        }
 
-       bodies.push( body );
+        const shape = getShape( mesh.geometry );
 
-       if ( mode !== 'static' ) {
+        if ( shape === null ) return;
 
-           meshes.push( mesh );
-           meshMap.set( mesh, body );
+        shape.setMass( mass );
+        shape.setRestitution( restitution );
 
-       }
+        const body = mesh.isInstancedMesh
+                            ? createInstancedBody( mesh, mass, shape, mode )
+                            : createBody( mesh.position, mesh.quaternion, mass, shape, mode );
+
+        bodies.push( body );
+
+        if ( mode !== 'fixed' ) {
+
+            meshes.push( mesh );
+            meshMap.set( mesh, body );
+
+        }
 
    }
 
@@ -162,12 +170,18 @@ async function RapierPhysics() {
         let desc;
 
         if ( mode === 'kinematic_velocity' ) {
+
             desc = RAPIER.RigidBodyDesc.kinematicVelocityBased();
             desc.setTranslation( ...position );
             if ( quaternion !== null ) desc.setRotation( quaternion );
+
         }
 
         else if ( mode === 'kinematic_position' ) {
+
+            desc = RAPIER.RigidBodyDesc.kinematicPositionBased();
+            desc.setTranslation( ...position );
+            if ( quaternion !== null ) desc.setRotation( quaternion );
 
         }
         else if ( mode === 'dynamic' ) {
@@ -175,12 +189,24 @@ async function RapierPhysics() {
             desc = RAPIER.RigidBodyDesc.dynamic();
             desc.setTranslation( ...position );
             if ( quaternion !== null ) desc.setRotation( quaternion );
+
         }
 
-        else {
+        else if ( mode === 'fixed' ) {
+
             desc = RAPIER.RigidBodyDesc.fixed();
             desc.setTranslation( ...position );
             if ( quaternion !== null ) desc.setRotation( quaternion );
+
+        }
+
+        else {
+
+            console.warn( 'Unknown mode: ' + mode );
+            desc = RAPIER.RigidBodyDesc.fixed();
+            desc.setTranslation( ...position );
+            if ( quaternion !== null ) desc.setRotation( quaternion );
+
         }
 
         const body = world.createRigidBody( desc );
@@ -190,19 +216,31 @@ async function RapierPhysics() {
 
    }
 
-   function setMeshPosition( mesh, position, index = 0 ) {
+    function setMeshPosition( mesh, position, index = 0 ) {
 
-       let body = meshMap.get( mesh );
+        let body = meshMap.get( mesh );
 
-       if ( mesh.isInstancedMesh ) {
+        if ( mesh.isInstancedMesh ) {
 
-           body = body[ index ];
+            body = body[ index ];
 
-       }
+        }
 
-       body.setAngvel( ZERO );
-       body.setLinvel( ZERO );
-       body.setTranslation( position );
+        // https://rapier.rs/javascript3d/enums/RigidBodyType.html
+
+        // console.log( body.bodyType() );
+
+        if ( body.bodyType() === RAPIER.RigidBodyType.Dynamic ) {
+
+            body.setAngvel( ZERO );
+            body.setLinvel( ZERO );
+            body.setTranslation( position );
+        }
+        else if ( body.bodyType() === RAPIER.RigidBodyType.KinematicPositionBased ) {
+
+            body.setNextKinematicTranslation( position );
+
+        }
 
    }
 
