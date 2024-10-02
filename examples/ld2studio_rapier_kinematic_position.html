@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js physics - rapier3d instancing</title>
+		<title>three.js physics - rapier3d kinematic velocity</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		<link type="text/css" rel="stylesheet" href="main.css">
@@ -9,7 +9,7 @@
 	<body>
 
 		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> physics - <a href="https://github.com/dimforge/rapier.js" target="_blank">rapier</a> instanced bodies
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> physics - <a href="https://github.com/dimforge/rapier.js" target="_blank">rapier</a> kinematic position
 		</div>
 
 		<script type="importmap">
@@ -36,7 +36,8 @@
 			let camera, scene, renderer, stats;
 			let physics, position;
 
-			let boxes, spheres;
+			let boxes, spheres, capsules;
+			let edge1, edge2;
 
 
 			init();
@@ -113,7 +114,7 @@
 				boxes.instanceMatrix.setUsage( THREE.DynamicDrawUsage ); // will be updated every frame
 				boxes.castShadow = true;
 				boxes.receiveShadow = true;
-				boxes.userData.physics = { mass: 1, mode: 'dynamic' };
+				boxes.userData.physics = { mass: 1, restitution: 0.5, mode: 'dynamic' };
 				scene.add( boxes );
 
 				for ( let i = 0; i < boxes.count; i ++ ) {
@@ -131,7 +132,7 @@
 				spheres.instanceMatrix.setUsage( THREE.DynamicDrawUsage ); // will be updated every frame
 				spheres.castShadow = true;
 				spheres.receiveShadow = true;
-				spheres.userData.physics = { mass: 1, mode: 'dynamic' };
+				spheres.userData.physics = { mass: 1, restitution: 1.0, mode: 'dynamic' };
 				scene.add( spheres );
 
 				for ( let i = 0; i < spheres.count; i ++ ) {
@@ -142,6 +143,49 @@
 
 				}
 
+				// Capsules
+
+				const geometryCapsule = new THREE.CapsuleGeometry( 0.05, 0.1, 4 );
+				capsules = new THREE.InstancedMesh( geometryCapsule, material, 100 );
+				capsules.instanceMatrix.setUsage( THREE.DynamicDrawUsage ); // will be updated every frame
+				capsules.castShadow = true;
+				capsules.receiveShadow = true;
+				capsules.userData.physics = { mass: 1, restitution: 0.8, mode: 'dynamic' };
+				scene.add( capsules );
+
+				for ( let i = 0; i < capsules.count; i ++ ) {
+
+					matrix.setPosition( Math.random() - 0.5, Math.random() * 2, Math.random() - 0.5 );
+					capsules.setMatrixAt( i, matrix );
+					capsules.setColorAt( i, color.setHex( 0xffffff * Math.random() ) );
+
+				}
+
+				// Edges
+
+				const geometryEdge = new THREE.BoxGeometry( 0.1, 0.5, 2.0 );
+				const materialEdge = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+				edge1 = new THREE.Mesh( geometryEdge, materialEdge );
+				edge1.position.set( 1.2, 0.25, 0 );
+				edge1.castShadow = true;
+				edge1.receiveShadow = true;
+				edge1.userData.physics = { mode: 'kinematic_position' };
+
+				edge2 = new THREE.Mesh( geometryEdge, materialEdge );
+				edge2.position.set( -1.2, 0.25, 0 );
+				edge2.castShadow = true;
+				edge2.receiveShadow = true;
+				edge2.userData.physics = { mode: 'kinematic_position' };
+				scene.add( edge1, edge2 );
+
+				params.edgePosition = 0.0;
+				gui.add( params, 'edgePosition', -1, 1, 0.05 ).onChange( function () {
+					
+					physics.setMeshPosition( edge1, new THREE.Vector3( 1.2 + params.edgePosition, 0.25, 0 ), 0 );
+					physics.setMeshPosition( edge2, new THREE.Vector3( -1.2 - params.edgePosition, 0.25, 0 ), 0 );
+					
+				});
+				
 				physics.addScene( scene );
 
 				//
@@ -175,6 +219,13 @@
 
 					position.set( 0, Math.random() + 1, 0 );
 					physics.setMeshPosition( spheres, position, index );
+
+					//
+
+					index = Math.floor( Math.random() * capsules.count );
+
+					position.set( 0, Math.random() + 1, 0 );
+					physics.setMeshPosition( capsules, position, index );
 
 				};
 
