@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 
-import { UIPanel, UIRow, UICheckbox, UIText } from './libs/ui.js';
+import { UIPanel, UIRow, UICheckbox, UIText, UISelect, UINumber } from './libs/ui.js';
+
+import { SetPhysicsCommand } from './commands/SetPhysicsCommand.js';
+import { SetValueCommand } from './commands/SetValueCommand.js';
 
 function SidebarPhysics( editor ) {
 
@@ -13,42 +16,114 @@ function SidebarPhysics( editor ) {
 	container.setPaddingTop( '20px' );
 	container.setDisplay( 'none' );
 
-    // enable
+    // type
 
-    const physicsEnableRow = new UIRow();
-    const physicsEnable = new UICheckbox().onChange( update );
+    const physicsTypeRow = new UIRow();
+    const physicsType = new UISelect().setWidth( '150px' ).setFontSize( '12px' )
+        .onChange( () => {
+            // console.log( 'Physics Type: ', physicsType.getValue() );
+            editor.execute( new SetPhysicsCommand( editor, editor.selected, physicsType.getValue() ) );
 
-    physicsEnableRow.add( new UIText( strings.getKey( 'sidebar/physics/enable' ) ).setWidth( '90px' ) );
-    physicsEnableRow.add( physicsEnable );
+            updateRows( editor.selected );
+            
+        } );
+    physicsType.setOptions( {
+        'none': 'disabled',
+        'fixed': 'fixed',
+        'dynamic': 'dynamic',
+        'kinematic_velocity': 'kinematic velocity',
+        'kinematic_position': 'kinematic position'
+        } ).setValue( 'none' );
 
-    container.add( physicsEnableRow );
+    physicsTypeRow.add( new UIText( strings.getKey( 'sidebar/physics/type' ) ).setClass( 'Label' ) );
+    physicsTypeRow.add( physicsType );
 
-    //
+    container.add( physicsTypeRow );
+
+    // mass
+
+    const massRow = new UIRow();
+    const mass = new UINumber( 1 ).setRange( 0, Infinity ).onChange( update );
+    massRow.add( new UIText( strings.getKey( 'sidebar/physics/mass' ) ).setClass( 'Label' ) );
+    massRow.add( mass );
+    container.add( massRow );
+
+
 
     function update() {
 
         const object = editor.selected;
 
-        if ( object !== null ) {
-            console.log( 'Physics update: ', object )
+        if ( object !== null && editor.physics[ object.uuid ] !== undefined ) {
+            // console.log( 'Physics update: ', object, object.uuid )
+
+            if ( editor.physics[ object.uuid ].mass !== undefined ) {
+                
+                editor.execute( new SetValueCommand( editor, editor.physics[ object.uuid ], 'mass', mass.getValue() ) );
+
+            }
 
         }
     }
 
     function updateRows( object ) {
+        console.log( 'Update Rows: ', object, object.uuid )
+        const properties = {
+            'mass': massRow,
+            // 'restitution': null
+        };
+
+        const physicsObject = editor.physics[ object.uuid ];
+
+        // console.log( 'properties keys: ', Object.keys( properties ) )
+        // console.log( 'properties values: ', Object.values( properties ) )
+        // console.log( 'properties entries: ', Object.entries( properties ) )
+
+        Object.keys( properties ).forEach( ( property ) => {
+            // console.log( 'properties: ', property )
+            const uiElement = properties[ property ];
+            // console.log( 'uiElement: ', uiElement )
+            uiElement.setDisplay( physicsObject[ property ] !== undefined ? '' : 'none' );
+            
+        })
 
     }
 
-    function updateUI( object ) {
 
+    function updateUI( object ) {
+        // console.log( 'Update UI: ', object, object.uuid )
+        const physics = editor.physics[ object.uuid ];
+
+        if ( physics === undefined ) return;
+
+        physicsType.setValue( physics.type );
+
+        if ( physics.mass !== undefined ) {
+            mass.setValue( physics.mass );
+        }
+          
     }
 
     // events
 
-	signals.objectSelected.add( function ( object ) {
+    signals.objectAdded.add( function ( object ) {
+        // console.log( 'Object Added: ', object.uuid )
+        if ( editor.physics[ object.uuid ] === undefined ) {
+            
+            editor.execute( new SetPhysicsCommand( editor, object, 'none' ) );
+            
+        }
+        else {
+            // updateRows( object );
+            // updateUI( object );
+        }
 
-		if ( object !== null ) {
-            console.log( 'Object Selected: ', object )
+    } );
+
+	signals.objectSelected.add( function ( object ) {
+        
+		if ( object !== null && object.type === 'Mesh' ) {
+            // console.log( 'Object Selected: ', object )
 			container.setDisplay( 'block' );
 
 			updateRows( object );
@@ -65,7 +140,7 @@ function SidebarPhysics( editor ) {
     signals.objectChanged.add( function ( object ) {
 
 		if ( object !== editor.selected ) return;
-        console.log( 'Object Changed: ', object )
+        // console.log( 'Object Changed: ', object )
 		updateUI( object );
 
 	} );
@@ -73,7 +148,7 @@ function SidebarPhysics( editor ) {
     signals.refreshSidebarObject3D.add( function ( object ) {
 
 		if ( object !== editor.selected ) return;
-        console.log( 'Refresh Sidebar: ', object )
+        // console.log( 'Refresh Sidebar: ', object )
 		updateUI( object );
 
 	} );

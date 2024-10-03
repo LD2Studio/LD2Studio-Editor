@@ -31,6 +31,7 @@ function Strings( config ) {
 			'command/SetMaterialRange': 'Set Material Range',
 			'command/SetMaterialValue': 'Set Material Value',
 			'command/SetMaterialVector': 'Set Material Vector',
+			'command/SetPhysics': 'Set Physics',
 			'command/SetPosition': 'Set Position',
 			'command/SetRotation': 'Set Rotation',
 			'command/SetScale': 'Set Scale',
@@ -347,6 +348,8 @@ function Strings( config ) {
 			'sidebar/script/remove': 'Remove',
 
 			'sidebar/physics/enable': 'Enable',
+			'sidebar/physics/type': 'Type',
+			'sidebar/physics/mass': 'Mass',
 
 			'sidebar/project': 'Project',
 			'sidebar/project/antialias': 'Antialias',
@@ -442,6 +445,7 @@ function Strings( config ) {
 			'command/SetMaterialRange': 'Définir la gamme de matériaux',
 			'command/SetMaterialValue': 'Définir la valeur du matériau',
 			'command/SetMaterialVector': 'Définir le vecteur de matériau',
+			'command/SetPhysics': 'Définir le comportement physique',
 			'command/SetPosition': 'Définir la position',
 			'command/SetRotation': 'Définir la rotation',
 			'command/SetScale': 'Définir l’échelle',
@@ -758,6 +762,8 @@ function Strings( config ) {
 			'sidebar/script/remove': 'Supprimer',
 
 			'sidebar/physics/enable': 'Activation',
+			'sidebar/physics/type': 'Type',
+			'sidebar/physics/mass': 'Masse',
 
 			'sidebar/project': 'Projet',
 			'sidebar/project/antialias': 'Anticrénelage',
@@ -853,6 +859,7 @@ function Strings( config ) {
 			'command/SetMaterialRange': '设置材料范围',
 			'command/SetMaterialValue': '设置材料值',
 			'command/SetMaterialVector': '设置材质矢量',
+			'command/SetPhysics': '设置物理',
 			'command/SetPosition': '设置位置',
 			'command/SetRotation': '设置旋转',
 			'command/SetScale': '设置比例',
@@ -1168,8 +1175,10 @@ function Strings( config ) {
 			'sidebar/script/edit': '编辑',
 			'sidebar/script/remove': '删除',
 
-			'sidebar/physics/enable': 'Enable',
-
+			'sidebar/physics/enable': '启用',
+			'sidebar/physics/type': '类型',
+			'sidebar/physics/mass': '质量',
+			
 			'sidebar/project': '项目',
 			'sidebar/project/antialias': '抗锯齿',
 			'sidebar/project/shadows': '阴影',
@@ -1264,6 +1273,7 @@ function Strings( config ) {
 			'command/SetMaterialRange': 'マテリアル範囲の設定',
 			'command/SetMaterialValue': 'マテリアル値の設定',
 			'command/SetMaterialVector': '素材のベクトルを設定します',
+			'command/SetPhysics': '物理を設定',
 			'command/SetPosition': '位置を設定',
 			'command/SetRotation': '回転を設定',
 			'command/SetScale': 'スケールを設定',
@@ -1579,7 +1589,9 @@ function Strings( config ) {
 			'sidebar/script/edit': '編集',
 			'sidebar/script/remove': '削除',
 
-			'sidebar/physics/enable': 'Enable',
+			'sidebar/physics/enable': '有効化',
+			'sidebar/physics/type': 'タイプ',
+			'sidebar/physics/mass': '質量',
 
 			'sidebar/project': 'プロジェクト',
 			'sidebar/project/antialias': 'アンチエイリアス',
@@ -1674,6 +1686,7 @@ function Strings( config ) {
 			'command/SetMaterialRange': '머티리얼 범위 설정',
 			'command/SetMaterialValue': '머티리얼 값 설정',
 			'command/SetMaterialVector': '머티리얼 벡터 설정',
+			'command/SetPhysics': '풀이 설정',
 			'command/SetPosition': '위치 설정',
 			'command/SetRotation': '회전 설정',
 			'command/SetScale': '스케일 설정',
@@ -1989,7 +2002,9 @@ function Strings( config ) {
 			'sidebar/script/edit': '편집',
 			'sidebar/script/remove': '삭제',
 
-			'sidebar/physics/enable': 'Enable',
+			'sidebar/physics/enable': '취소',
+			'sidebar/physics/type': '타입',
+			'sidebar/physics/mass': '마스',
 	
 			'sidebar/project': '프로젝트',
 			'sidebar/project/antialias': '안티앨리어싱',

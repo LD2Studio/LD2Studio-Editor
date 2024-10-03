@@ -47,7 +47,12 @@ function SidebarProperties( editor ) {
 
 		scriptTab.setHidden( object === editor.camera );
 
-		physicsTab.setHidden( object === editor.camera || object.isScene );
+		physicsTab.setHidden(
+			object === editor.camera
+			|| object.isScene
+			|| object.isCamera
+			|| editor.project.physics.enable === false
+		 );
 
 		// set active tab
 

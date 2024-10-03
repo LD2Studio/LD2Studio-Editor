@@ -33,6 +33,9 @@ var APP = {
 			this.setScene( loader.parse( json.scene ) );
 			this.setCamera( loader.parse( json.viewportCamera ) );
 
+			this.physics = json.physics;
+			// console.log( 'Physics: ', this.physics );
+
 			events = {
 				init: [],
 				start: [],
@@ -167,7 +170,7 @@ var APP = {
 
 		}
 
-		this.play = function ( physics ) {
+		this.play = function ( physicsEngine ) {
 
 			startTime = prevTime = performance.now();
 
@@ -181,16 +184,16 @@ var APP = {
 
 			renderer.setAnimationLoop( animate );
 
-			if ( physics !== undefined ) {
-
-				physics.addScene( scene );
-				physics.start();
-
+			if ( physicsEngine !== undefined ) {
+				
+				physicsEngine.addScene( scene, this.physics );
+				physicsEngine.start();
+				
 			}
 
 		};
 
-		this.stop = function ( physics ) {
+		this.stop = function ( physicsEngine ) {
 
 			document.removeEventListener( 'keydown', onKeyDown );
 			document.removeEventListener( 'keyup', onKeyUp );
@@ -202,10 +205,10 @@ var APP = {
 
 			renderer.setAnimationLoop( null );
 
-			if (physics !== undefined ) {
+			if (physicsEngine !== undefined ) {
 
-				physics.stop();
-				physics.dispose();
+				physicsEngine.stop();
+				physicsEngine.dispose();
 				
 			}
 
