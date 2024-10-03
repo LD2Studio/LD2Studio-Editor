@@ -25,7 +25,7 @@
 
 			import * as THREE from 'three';
 			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-			import { RapierPhysics } from 'three/addons/physics/Rapier.js';
+			import { RapierPhysics } from 'three/addons/physics/RapierPhysicsEngine.js';
 			import Stats from 'three/addons/libs/stats.module.js';
 			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
@@ -96,7 +96,7 @@
 				);
 				floor.position.y = - 2.5;
 				floor.receiveShadow = true;
-				floor.userData.physics = { mode: 'fixed' };
+				floor.userData.physics = { type: 'fixed' };
 				scene.add( floor );
 
 				// Rigid bodies material
@@ -113,7 +113,7 @@
 				boxes.instanceMatrix.setUsage( THREE.DynamicDrawUsage ); // will be updated every frame
 				boxes.castShadow = true;
 				boxes.receiveShadow = true;
-				boxes.userData.physics = { mass: 1, mode: 'dynamic' };
+				boxes.userData.physics = { mass: 1, type: 'dynamic' };
 				scene.add( boxes );
 
 				for ( let i = 0; i < boxes.count; i ++ ) {
@@ -131,7 +131,7 @@
 				spheres.instanceMatrix.setUsage( THREE.DynamicDrawUsage ); // will be updated every frame
 				spheres.castShadow = true;
 				spheres.receiveShadow = true;
-				spheres.userData.physics = { mass: 1, mode: 'dynamic' };
+				spheres.userData.physics = { mass: 1, type: 'dynamic' };
 				scene.add( spheres );
 
 				for ( let i = 0; i < spheres.count; i ++ ) {

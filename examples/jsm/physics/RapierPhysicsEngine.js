@@ -94,13 +94,13 @@ async function RapierPhysics() {
    const _quaternion = new Quaternion();
    const _matrix = new Matrix4();
 
-    function addScene( scene, physicsObjects ) {
+    function addScene( scene, physicsObjects = {} ) {
         // console.log( 'Add Scene: ', scene, physicsObjects );
         scene.traverse( function ( child ) {
 
             if ( child.isMesh ) {
                 
-                const physics = physicsObjects[ child.uuid ];
+                const physics = child.userData.physics === undefined ? physicsObjects[ child.uuid ] : child.userData.physics;
 
                 if ( physics ) {
 
