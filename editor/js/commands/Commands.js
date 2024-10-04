@@ -13,6 +13,7 @@ export { SetMaterialMapCommand } from './SetMaterialMapCommand.js';
 export { SetMaterialRangeCommand } from './SetMaterialRangeCommand.js';
 export { SetMaterialValueCommand } from './SetMaterialValueCommand.js';
 export { SetMaterialVectorCommand } from './SetMaterialVectorCommand.js';
+export { SetPhysicsCommand } from './SetPhysicsCommand.js';
 export { SetPositionCommand } from './SetPositionCommand.js';
 export { SetRotationCommand } from './SetRotationCommand.js';
 export { SetScaleCommand } from './SetScaleCommand.js';

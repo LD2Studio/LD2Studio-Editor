@@ -1,7 +1,7 @@
 import { UIPanel } from './libs/ui.js';
 import { APP } from './libs/app.js';
 
-import { RapierPhysics } from 'three/addons/physics/Rapier.js';
+import { RapierPhysics } from 'three/addons/physics/RapierPhysicsEngine.js';
 
 function Player( editor ) {
 

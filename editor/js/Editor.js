@@ -131,6 +131,8 @@ function Editor() {
 		addons: [],
 	};
 
+	this.physics = {};
+
 	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
 
 	this.mixer = new THREE.AnimationMixer( this.scene );
@@ -635,6 +637,7 @@ Editor.prototype = {
 		this.project.app = {};
 		this.project.physics = {};
 		this.project.addons = [];
+		this.physics = {};
 
 		this.materialsRefCounter.clear();
 
@@ -672,6 +675,7 @@ Editor.prototype = {
 		this.project.app = json.project.app ?? {};
 		this.project.physics = json.project.physics ?? {};
 		this.project.addons = json.project.addons ?? [];
+		this.physics = json.physics;
 
 		this.setScene( await loader.parseAsync( json.scene ) );
 
@@ -715,6 +719,8 @@ Editor.prototype = {
 
 		}
 
+		// TODO : physics clean up
+
 		// honor modelviewer environment
 
 		let environment = null;
@@ -754,7 +760,8 @@ Editor.prototype = {
 			scene: this.scene.toJSON(),
 			scripts: this.scripts,
 			history: this.history.toJSON(),
-			environment: environment
+			environment: environment,
+			physics: this.physics
 
 		};
 

@@ -52,7 +52,7 @@
 					if ( start._name === 'Run' ) {
 						start.name( 'Pause' );
 						physics.start();
-						intervalId = setInterval( createRigidBodies, 1000 / frameRate );
+						// intervalId = setInterval( createRigidBodies, 1000 / frameRate );
 					} else {
 						start.name( 'Run' );
 						physics.stop();
@@ -92,7 +92,7 @@
 
 				const floor = new THREE.Mesh(
 					new THREE.BoxGeometry( 10, 5, 10 ),
-					new THREE.ShadowMaterial( { color: 0x444444 } )
+					new THREE.MeshLambertMaterial( { color: 0x888888 } )
 				);
 				floor.position.y = - 2.5;
 				floor.receiveShadow = true;
@@ -114,7 +114,7 @@
 				boxes.castShadow = true;
 				boxes.receiveShadow = true;
 				boxes.userData.physics = { mass: 1, type: 'dynamic' };
-				scene.add( boxes );
+				// scene.add( boxes );
 
 				for ( let i = 0; i < boxes.count; i ++ ) {
 
@@ -132,7 +132,7 @@
 				spheres.castShadow = true;
 				spheres.receiveShadow = true;
 				spheres.userData.physics = { mass: 1, type: 'dynamic' };
-				scene.add( spheres );
+				// scene.add( spheres );
 
 				for ( let i = 0; i < spheres.count; i ++ ) {
 
@@ -141,6 +141,42 @@
 					spheres.setColorAt( i, color.setHex( 0xffffff * Math.random() ) );
 
 				}
+
+				// Compound colliders
+
+				const compoundMesh = new THREE.Group();
+				compoundMesh.position.set( 0, 1, 0 );
+				compoundMesh.rotation.set( Math.PI / 4, 0, 0 );
+				compoundMesh.userData.physics = { mass: 1, type: 'dynamic' };
+				scene.add( compoundMesh );
+
+				const geometry1 = new THREE.BoxGeometry( 0.4, 0.2, 0.2 );
+				const geometry2 = new THREE.BoxGeometry( 0.1, 0.1, 0.4 );
+				const geometry3 = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
+
+				const material2 = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+
+				const compound1 = new THREE.Mesh( geometry1, material2 );
+				compound1.castShadow = true;
+				compound1.receiveShadow = true;
+				compound1.userData.physics = { mass: 1, type: 'collider' };
+				compoundMesh.add( compound1 );
+
+				const compound2 = new THREE.Mesh( geometry2, material2 );
+				compound2.position.set( 0.2, -0.1, 0 );
+				compound2.castShadow = true;
+				compound2.receiveShadow = true;
+				compound2.userData.physics = { mass: 1, type: 'collider' };
+				compoundMesh.add( compound2 );
+
+				const compound3 = new THREE.Mesh( geometry3, material2 );
+				compound3.position.set( - 0.2, -0.1, 0 );
+				compound3.castShadow = true;
+				compound3.receiveShadow = true;
+				compound3.userData.physics = { mass: 1, type: 'collider' };
+				compoundMesh.add( compound3 );
+
+				scene.add( compoundMesh );
 
 				physics.addScene( scene );
 

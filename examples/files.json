@@ -483,7 +483,8 @@
 		"physics_rapier_instancing",
 		"ld2studio_rapier_instanced_bodies",
 		"ld2studio_rapier_kinematic_velocity",
-		"ld2studio_rapier_kinematic_position"
+		"ld2studio_rapier_kinematic_position",
+		"ld2studio_rapier_compound_colliders"
 	],
 	"misc": [
 		"misc_animation_groups",
