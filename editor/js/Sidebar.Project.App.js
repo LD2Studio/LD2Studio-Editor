@@ -190,7 +190,7 @@ function SidebarProjectApp( editor ) {
 
 		if ( editor.project.addons !== undefined ) {
 
-			const ADDONS_PATH = '../../examples/jsm/';
+			const ADDONS_PATH = '../examples/jsm/';
 
 			for ( const addon of editor.project.addons ) {
 
