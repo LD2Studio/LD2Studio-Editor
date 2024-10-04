@@ -54,6 +54,11 @@ class SetPhysicsCommand extends Command {
 				this.editor.physics[ this.object.uuid ].type = 'kinematic_position';
 				break;
 			}
+			case 'collider': {
+				this.editor.physics[ this.object.uuid ].type = 'collider';
+				this.editor.physics[ this.object.uuid ].mass = 1.0;
+				break;
+			}
 			default: break;
 		}
 

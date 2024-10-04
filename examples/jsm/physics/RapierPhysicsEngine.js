@@ -98,7 +98,7 @@ async function RapierPhysics() {
         // console.log( 'Add Scene: ', scene, physicsObjects );
         scene.traverse( function ( child ) {
 
-            if ( child.isMesh ) {
+            if ( child.isMesh || child.isGroup) {
                 
                 const physics = child.userData.physics === undefined ? physicsObjects[ child.uuid ] : child.userData.physics;
 
@@ -119,36 +119,56 @@ async function RapierPhysics() {
         { mass = 0, restitution = 0, type = 'none' } = {} ) {
         
         const mode = type;
-
         if ( mode === 'none' ) return;
 
-        if ( ![ 'dynamic', 'fixed', 'kinematic_position', 'kinematic_velocity' ].includes( mode ) ) {
+        if ( ![ 'dynamic', 'fixed', 'kinematic_position', 'kinematic_velocity', 'collider' ].includes( mode ) ) {
 
             console.warn( `[${ mesh.name }] Unknown physics mode: ${ mode }` );
             return;
         }
 
-        const shape = getShape( mesh.geometry );
+        const shape = mesh.isMesh ? getShape( mesh.geometry ) : undefined;
 
         if ( shape === null ) return;
 
-        shape.setMass( mass );
-        shape.setRestitution( restitution );
+        if ( shape !== undefined ) {
+            
+            shape.setMass( mass );
+            shape.setRestitution( restitution );
 
-        const body = mesh.isInstancedMesh
-                            ? createInstancedBody( mesh, mass, shape, mode )
-                            : createBody( mesh.position, mesh.quaternion, mass, shape, mode );
+        }
 
-        bodies.push( body );
+        if ( mode === 'collider' ) {
 
-        if ( mode !== 'fixed' ) {
+            // console.log( mesh.parent );
+            shape.setTranslation( ...mesh.position );
+            shape.setRotation( mesh.quaternion );
 
-            meshes.push( mesh );
-            meshMap.set( mesh, body );
+            let body = meshMap.get( mesh.parent );
+            // console.log( body );
+
+            world.createCollider( shape, body );
+
+        }
+        else {
+
+            const body = mesh.isInstancedMesh
+                                ? createInstancedBody( mesh, mass, shape, mode )
+                                : createBody( mesh.position, mesh.quaternion, mass, shape, mode );
+    
+            bodies.push( body );
+    
+            if ( mode !== 'fixed' ) {
+    
+                meshes.push( mesh );
+                meshMap.set( mesh, body );
+    
+            }
 
         }
 
    }
+
 
    function createInstancedBody( mesh, mass, shape, mode ) {
 
@@ -212,7 +232,9 @@ async function RapierPhysics() {
         }
 
         const body = world.createRigidBody( desc );
-        world.createCollider( shape, body );
+
+        if (shape !== undefined )
+            world.createCollider( shape, body );
 
         return body;
 

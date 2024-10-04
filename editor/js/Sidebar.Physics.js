@@ -32,7 +32,8 @@ function SidebarPhysics( editor ) {
         'fixed': 'fixed',
         'dynamic': 'dynamic',
         'kinematic_velocity': 'kinematic velocity',
-        'kinematic_position': 'kinematic position'
+        'kinematic_position': 'kinematic position',
+        'collider': 'collider'
         } ).setValue( 'none' );
 
     physicsTypeRow.add( new UIText( strings.getKey( 'sidebar/physics/type' ) ).setClass( 'Label' ) );
@@ -67,7 +68,7 @@ function SidebarPhysics( editor ) {
     }
 
     function updateRows( object ) {
-        console.log( 'Update Rows: ', object, object.uuid )
+        // console.log( 'Update Rows: ', object, object.uuid )
         const properties = {
             'mass': massRow,
             // 'restitution': null

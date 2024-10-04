@@ -181,7 +181,7 @@ function SidebarProjectApp( editor ) {
 		
 		if ( editor.project.physics !== undefined && editor.project.physics.enable === true ) {
 			
-			loader.load( '../examples/jsm/physics/Rapier.js', function ( content ) {
+			loader.load( '../examples/jsm/physics/RapierPhysicsEngine.js', function ( content ) {
 	
 				toZip[ 'js/Rapier.js' ] = strToU8( content );
 	
