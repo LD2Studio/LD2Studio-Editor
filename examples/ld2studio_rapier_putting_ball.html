@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js physics - rapier3d kinematic velocity</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<link type="text/css" rel="stylesheet" href="main.css">
+	</head>
+	<body>
+
+		<div id="info">
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> physics - <a href="https://github.com/dimforge/rapier.js" target="_blank">rapier</a> putting ball
+		</div>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { RapierPhysics } from 'three/addons/physics/RapierPhysicsEngine.js';
+			import Stats from 'three/addons/libs/stats.module.js';
+			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+			const gui = new GUI();
+
+			const params = {};
+
+			let camera, scene, renderer, stats;
+			let physics, position;
+
+			let boxes, spheres, capsules;
+			let paddle;
+
+			init();
+
+			async function init() {
+
+				physics = await RapierPhysics();
+
+				const frameRate = 60;
+				let intervalId = null;
+
+				params.enabled = () => {
+					if ( start._name === 'Run' ) {
+						start.name( 'Pause' );
+						physics.start();
+						//intervalId = setInterval( createRigidBodies, 1000 / frameRate );
+					} else {
+						start.name( 'Run' );
+						physics.stop();
+						clearInterval( intervalId );
+					}
+				}
+				const start = gui.add( params, 'enabled' )
+					.name( 'Run' );
+
+				params.debug = false;
+					
+				const debug = gui.add( params, 'debug' )
+					.name( 'Show Collision Shapes')
+					.onChange( ( val ) => physics.showDebug( val ) );
+
+				position = new THREE.Vector3();
+
+				//
+
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 100 );
+				camera.position.set( - 1, 1.5, 2 );
+				camera.lookAt( 0, 0.5, 0 );
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x666666 );
+
+				const hemiLight = new THREE.HemisphereLight();
+				scene.add( hemiLight );
+
+				const dirLight = new THREE.DirectionalLight( 0xffffff, 3 );
+				dirLight.position.set( 5, 5, 5 );
+				dirLight.castShadow = true;
+				dirLight.shadow.camera.zoom = 2;
+				scene.add( dirLight );
+
+				// Floor
+
+				const floor = new THREE.Mesh(
+					new THREE.BoxGeometry( 10, 5, 10 ),
+					new THREE.ShadowMaterial( { color: 0x444444 } )
+				);
+				floor.position.y = - 2.5;
+				floor.receiveShadow = true;
+				floor.userData.physics = { type: 'fixed' };
+				scene.add( floor );
+
+				// Putting leg
+
+				const tiltBoardMesh = new THREE.Mesh(
+					new THREE.BoxGeometry( 0.5, 0.1, 0.5 ),
+					new THREE.MeshLambertMaterial( { color: 0xffffff } ));
+				tiltBoardMesh.position.set( 0, 0.5, 0 );
+				tiltBoardMesh.castShadow = true;
+				tiltBoardMesh.receiveShadow = true;
+				tiltBoardMesh.userData.physics = {
+					type: 'kinematic_velocity'
+				};
+
+				params.tiltAngVel = 0.0;
+				gui.add( params, 'tiltAngVel', -10, 10, 0.1 ).onChange( function () {
+					
+					physics.setMeshAngularVelocity( tiltBoardMesh, new THREE.Vector3( 0, 0, params.tiltAngVel ) );
+					
+				});
+
+				params.tiltAngle = 0.0;
+				gui.add( params, 'tiltAngle', -180, 180, 0.1 ).onChange( function () {
+					
+					//tiltBoardMesh.rotation.z = params.tiltAngle * Math.PI / 180;
+				});
+
+				params.K = 1.0;
+				gui.add( params, 'K', 0, 100, 0.1 ).name('Coeff K')
+
+				params.ksi = 0.0;
+				gui.add( params, 'ksi', 0, 5, 0.01 ).name('Coeff ksi')
+
+				params.pulsation = 1.0;
+				gui.add( params, 'pulsation', 0, 5, 0.01 ).name('Coeff pulsation')
+
+				const tiltAxes = new THREE.AxesHelper();
+				tiltBoardMesh.add( tiltAxes );
+
+				scene.add( tiltBoardMesh );
+
+				
+				physics.addScene( scene );
+
+				let prev_vel = 0.0;
+
+				physics.onUpdate( ( delta ) => {
+					
+					console.log( tiltBoardMesh.rotation.z * 180 / Math.PI);
+					console.log( params.tiltAngle );
+
+					const error = ( params.tiltAngle * Math.PI / 180 * params.pulsation**2)
+						- tiltBoardMesh.rotation.z * params.pulsation**2
+						- (2 * params.ksi * params.pulsation) * prev_vel;
+					// console.log( error );
+
+					const vel = ( error * delta ) + prev_vel;
+					// console.log( vel );
+
+					physics.setMeshAngularVelocity( tiltBoardMesh,
+						new THREE.Vector3( 0, 0, vel ) );
+					
+					prev_vel = vel;
+				})
+
+				//
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setAnimationLoop( animate );
+				renderer.shadowMap.enabled = true;
+				document.body.appendChild( renderer.domElement );
+
+				stats = new Stats();
+				document.body.appendChild( stats.dom );
+
+				//
+
+				const controls = new OrbitControls( camera, renderer.domElement );
+				controls.target.y = 0.5;
+				controls.update();
+
+				
+
+			}
+
+			function animate() {
+
+				renderer.render( scene, camera );
+
+				stats.update();
+
+			}
+
+		</script>
+	</body>
+</html>

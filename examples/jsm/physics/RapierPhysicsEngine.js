@@ -81,6 +81,8 @@ async function RapierPhysics() {
    let meshMap = new WeakMap();
    let bodies = []; // Keep track of all created bodies.
 
+   let update;
+
    const debugMesh = new LineSegments(
        new BufferGeometry(),
        new LineBasicMaterial({
@@ -321,52 +323,55 @@ async function RapierPhysics() {
 
    //
 
-   function step() {
-       
-       world.timestep =  1 / frameRate;
-       world.step();
+    function step() {
 
-       //
+        world.timestep =  1 / frameRate;
 
-       for ( let i = 0, l = meshes.length; i < l; i ++ ) {
+        if (update !== undefined ) update( 1 / frameRate );
 
-           const mesh = meshes[ i ];
+        world.step();
 
-           if ( mesh.isInstancedMesh ) {
+        //
 
-               const array = mesh.instanceMatrix.array;
-               const bodies = meshMap.get( mesh );
+        for ( let i = 0, l = meshes.length; i < l; i ++ ) {
 
-               for ( let j = 0; j < bodies.length; j ++ ) {
+            const mesh = meshes[ i ];
 
-                   const body = bodies[ j ];
+            if ( mesh.isInstancedMesh ) {
 
-                   const position = body.translation();
-                   _quaternion.copy( body.rotation() );
+                const array = mesh.instanceMatrix.array;
+                const bodies = meshMap.get( mesh );
 
-                   _matrix.compose( position, _quaternion, _scale ).toArray( array, j * 16 );
+                for ( let j = 0; j < bodies.length; j ++ ) {
 
-               }
+                    const body = bodies[ j ];
 
-               mesh.instanceMatrix.needsUpdate = true;
-               mesh.computeBoundingSphere();
+                    const position = body.translation();
+                    _quaternion.copy( body.rotation() );
 
-           } else {
+                    _matrix.compose( position, _quaternion, _scale ).toArray( array, j * 16 );
 
-               const body = meshMap.get( mesh );
+                }
 
-               mesh.position.copy( body.translation() );
-               mesh.quaternion.copy( body.rotation() );
+                mesh.instanceMatrix.needsUpdate = true;
+                mesh.computeBoundingSphere();
 
-           }
+            } else {
 
-       }
+                const body = meshMap.get( mesh );
 
-       const { vertices, colors } = world.debugRender();
-       debugMesh.geometry.setAttribute('position', new BufferAttribute(vertices, 3));
-       debugMesh.geometry.setAttribute('color', new BufferAttribute(colors, 4));
+                mesh.position.copy( body.translation() );
+                mesh.quaternion.copy( body.rotation() );
 
-   }
+            }
+
+        }
+
+        const { vertices, colors } = world.debugRender();
+        debugMesh.geometry.setAttribute('position', new BufferAttribute(vertices, 3));
+        debugMesh.geometry.setAttribute('color', new BufferAttribute(colors, 4));
+
+    }
 
    // animate
    function start() {
@@ -381,17 +386,24 @@ async function RapierPhysics() {
 
    }
 
-   return {
-       addScene,
-       addMesh,
-       setMeshPosition,
-       setMeshVelocity,
-       setMeshAngularVelocity,
-       start,
-       stop,
-       dispose,
-       showDebug
-   };
+    function onUpdate( callback ) {
+        
+        update = callback;
+
+    }
+
+    return {
+        addScene,
+        addMesh,
+        setMeshPosition,
+        setMeshVelocity,
+        setMeshAngularVelocity,
+        start,
+        stop,
+        dispose,
+        showDebug,
+        onUpdate
+    };
 
 }
 
