@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js physics - rapier3d kinematic velocity</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<style>
+			.container {
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+			}
+
+			.chart-container {
+				display: none;
+				position: relative;
+				width: 100vw;
+			}
+
+			#myExperience {
+				height: 100vh;
+				width: 100%;
+			}
+		</style>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+		<script src="./jsm/libs/chart.js/chart.umd.js"></script>
+		<script src="./jsm/libs/chart.js/hammer.min.js"></script>
+		<script src="./jsm/libs/chart.js/chartjs-plugin-zoom.min.js"></script>
+	</head>
+	<body>
+
+		<div id="info">
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> physics - <a href="https://github.com/dimforge/rapier.js" target="_blank">rapier</a> putting ball
+		</div>
+
+		<div class="container">
+			<canvas id="myExperience"></canvas>
+			<div class="chart-container">
+				<canvas id="myChart"></canvas>
+			</div>
+		</div>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { RapierPhysics } from 'three/addons/physics/RapierPhysicsEngine.js';
+			import Stats from 'three/addons/libs/stats.module.js';
+			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+			const gui = new GUI();
+
+			const params = {};
+			const myGraph = document.getElementById('myChart');
+
+			let camera, scene, renderer, stats;
+			let physics, position;
+
+			let boxes, spheres, capsules;
+			let paddle;
+
+			let myChart;
+
+			init();
+
+			async function init() {
+
+				physics = await RapierPhysics();
+
+				const frameRate = 60;
+				let intervalId = null;
+
+				params.enabled = () => {
+					if ( start._name === 'Run' ) {
+						start.name( 'Pause' );
+						physics.start();
+						//intervalId = setInterval( createRigidBodies, 1000 / frameRate );
+					} else {
+						start.name( 'Run' );
+						physics.stop();
+						clearInterval( intervalId );
+					}
+				}
+				const start = gui.add( params, 'enabled' )
+					.name( 'Run' );
+
+				params.debug = false;
+					
+				const debug = gui.add( params, 'debug' )
+					.name( 'Show Collision Shapes')
+					.onChange( ( val ) => physics.showDebug( val ) );
+
+				position = new THREE.Vector3();
+
+				//
+
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 100 );
+				camera.position.set( - 1, 1.5, 2 );
+				camera.lookAt( 0, 0.5, 0 );
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x666666 );
+
+				const hemiLight = new THREE.HemisphereLight();
+				scene.add( hemiLight );
+
+				const dirLight = new THREE.DirectionalLight( 0xffffff, 3 );
+				dirLight.position.set( 5, 5, 5 );
+				dirLight.castShadow = true;
+				dirLight.shadow.camera.zoom = 2;
+				scene.add( dirLight );
+
+				// Floor
+
+				const floor = new THREE.Mesh(
+					new THREE.BoxGeometry( 10, 5, 10 ),
+					new THREE.ShadowMaterial( { color: 0x444444 } )
+				);
+				floor.position.y = - 2.5;
+				floor.receiveShadow = true;
+				floor.userData.physics = { type: 'fixed' };
+				scene.add( floor );
+
+				// Putting leg
+
+				const tiltBoardMesh = new THREE.Mesh(
+					new THREE.BoxGeometry( 0.5, 0.1, 0.5 ),
+					new THREE.MeshLambertMaterial( { color: 0xffffff } ));
+				tiltBoardMesh.position.set( 0, 0.5, 0 );
+				tiltBoardMesh.castShadow = true;
+				tiltBoardMesh.receiveShadow = true;
+				tiltBoardMesh.userData.physics = {
+					type: 'kinematic_velocity'
+				};
+
+
+				// Model
+
+				params.tiltAngle = 0.0;
+				gui.add( params, 'tiltAngle', -180, 180, 0.1 )
+					.name( 'Input Angle' );
+
+				const modelFolder = gui.addFolder( 'Model' );
+				
+				params.ksi = 0.0;
+				modelFolder.add( params, 'ksi', 0, 10, 0.01 ).name('ksi')
+
+				params.pulsation = 1.0;
+				modelFolder.add( params, 'pulsation', 0, 100, 0.01 ).name('pulsation (rad/s)')
+
+				const tiltAxes = new THREE.AxesHelper();
+				tiltBoardMesh.add( tiltAxes );
+
+				scene.add( tiltBoardMesh );
+
+				
+				physics.addScene( scene );
+
+				let prev_vel = 0.0;
+				let current_time = 0.0;
+
+				physics.onUpdate( ( delta ) => {
+					
+					// console.log( delta );
+					current_time += delta;
+					console.log( tiltBoardMesh.rotation.z * 180 / Math.PI);
+					console.log( params.tiltAngle );
+
+					const error = ( params.tiltAngle * Math.PI / 180 * params.pulsation**2)
+						- tiltBoardMesh.rotation.z * params.pulsation**2
+						- (2 * params.ksi * params.pulsation) * prev_vel;
+					// console.log( error );
+
+					const vel = ( error * delta ) + prev_vel;
+					// console.log( vel );
+
+					physics.setMeshAngularVelocity( tiltBoardMesh,
+						new THREE.Vector3( 0, 0, vel ) );
+					
+					prev_vel = vel;
+
+					updateGraph( current_time,
+						tiltBoardMesh.rotation.z * 180 / Math.PI,
+						params.tiltAngle );
+				})
+
+				// Experience renderer
+
+				renderer = new THREE.WebGLRenderer( { canvas: myExperience, antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setAnimationLoop( animate );
+				renderer.shadowMap.enabled = true;
+				
+				updateRendererSize();
+				
+
+				// Stats
+
+				stats = new Stats();
+				document.body.appendChild( stats.dom );
+
+				// OrbitControls
+
+				const controls = new OrbitControls( camera, renderer.domElement );
+				controls.target.y = 0.5;
+				controls.update();
+
+				// Graphs
+
+				params.showGraphs = () => {
+					
+					if ( graphUI._name === 'Show Graphs' ) {
+						graphUI.name( 'Hide Graphs' );
+						document.querySelector( '.chart-container' ).style.display = 'block';
+						document.querySelector( '.chart-container' ).style.height = '40vh';
+						document.getElementById( 'myExperience' ).style.height = '60vh';
+						updateRendererSize();
+					}
+					else {
+						graphUI.name( 'Show Graphs' );
+						document.querySelector( '.chart-container' ).style.display = 'none';
+						document.getElementById( 'myExperience' ).style.height = '100vh';
+						updateRendererSize();
+					}
+				}
+
+				const graphUI = gui.add( params, 'showGraphs' )
+					.name( 'Show Graphs' );
+
+				const data = {
+					datasets: [{
+						label: 'Angle de sortie',
+						data: [
+							// { x: 0, y: 3 },
+							// { x: 1, y: 8 },
+							// { x: 2, y: 7 },
+							// { x: 3, y: 12 }
+						],
+						backgroundColor: 'red',
+						borderColor: 'red',
+					},
+					{
+						label: "Angle d'entrée",
+						data: [
+							// { x: 0, y: 1 },
+							// { x: 1, y: 2 },
+							// { x: 2, y: 2 },
+							// { x: 3, y: 4 }
+						],
+						backgroundColor: 'green',
+						borderColor: 'green',
+					}]
+				};
+
+				myChart = new Chart( myGraph, {
+					type: 'scatter',
+					data,
+					options: {
+						animation: false,
+						parsing: false,
+						snapGaps: true,
+						scales: {
+							y: {
+								beginAtZero: true,
+								grid: {
+									color: 'rgba(255, 255, 255, 0.3)'
+								},
+								title: {
+									display: true,
+									text: 'Angle (°)',
+									color: 'rgba(255, 255, 255, 0.5)'
+								}
+							},
+							x: {
+								border: {
+									color: 'rgba(255, 255, 255, 0.5)'
+								},
+								grid: {
+									color: 'rgba(255, 255, 255, 0.3)'
+								},
+								title: {
+									display: true,
+									text: 'Temps (s)',
+									color: 'rgba(255, 255, 255, 0.5)'
+								}
+								
+							}
+						},
+						elements: {
+							line: {
+								borderWidth: 2
+							}, 
+							point: {
+								radius: 0
+							}
+						},
+						maintainAspectRatio: false,
+						plugins: {
+							zoom: {
+								zoom: {
+									wheel: {
+										enabled: true
+									},
+									pinch: {
+										enabled: true
+									},
+									mode: 'xy'
+								},
+								pan: {
+									enabled: true
+								}
+							}
+						},
+						showLine: true
+					},
+					// defaults: {
+					// 	borderColor: '#ffffff',
+					// }
+				})
+
+				function updateGraph( time, angle, angleInput ) {
+					
+					myChart.data.datasets[0].data.push( { x: time, y: angle } );
+					myChart.data.datasets[1].data.push( { x: time, y: angleInput } );
+					myChart.update( 'none' );
+				}
+				// Presets
+
+				let preset = null;
+
+				params.savePreset = function () {
+					preset = gui.save();
+					// console.log( preset );
+					localStorage.setItem( 'preset', JSON.stringify( preset ) );
+				}
+
+				params.loadPreset = function () {
+					preset = JSON.parse( localStorage.getItem( 'preset' ) );
+					// console.log( preset );
+					gui.load( preset );
+				}
+
+				gui.add( params, 'savePreset' ).name( 'Save Preset' );
+				gui.add( params, 'loadPreset' ).name( 'Load Preset' );
+
+			}
+
+			function animate() {
+
+				renderer.render( scene, camera );
+
+				stats.update();
+
+			}
+
+			const updateRendererSize = () => {
+					
+					console.log( myExperience.clientWidth, myExperience.clientHeight );
+					console.log( myExperience.width, myExperience.height );
+					camera.aspect = myExperience.clientWidth / myExperience.clientHeight;
+					camera.updateProjectionMatrix();
+
+					renderer.setSize( myExperience.clientWidth, myExperience.clientHeight, false );
+				}
+
+			addEventListener( 'resize', () => {
+
+				console.log( myExperience.clientWidth, myExperience.clientHeight );
+				updateRendererSize();
+
+			} );
+
+		</script>
+	</body>
+</html>
