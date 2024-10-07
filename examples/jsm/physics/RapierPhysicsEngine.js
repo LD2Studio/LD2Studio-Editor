@@ -270,6 +270,20 @@ async function RapierPhysics() {
 
    }
 
+   function setMeshRotation( mesh, quaternion, index = 0 ) {
+
+       let body = meshMap.get( mesh );
+
+       if ( mesh.isInstancedMesh ) {
+
+           body = body[ index ];
+
+       }
+
+       body.setRotation( quaternion );
+
+   }
+
    function setMeshVelocity( mesh, velocity, index = 0 ) {
 
        let body = meshMap.get( mesh );
@@ -396,6 +410,7 @@ async function RapierPhysics() {
         addScene,
         addMesh,
         setMeshPosition,
+        setMeshRotation,
         setMeshVelocity,
         setMeshAngularVelocity,
         start,
