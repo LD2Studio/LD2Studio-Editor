@@ -9,27 +9,46 @@
 			.container {
 				display: flex;
 				flex-direction: column;
-				height: 100%;
 			}
 
-			.chart-container {
-				display: none;
-				position: relative;
+			.bottom-container {
+				display: flex;
+				flex-direction: column;
+				height: 40vh;
 				width: 100vw;
 			}
 
+			.chart-container {
+				display: block;
+				position: relative;
+				width: 100vw;
+				height: 40vh;
+			}
+
 			.chart-controls {
-				position: absolute;
-				top: 5px;
-				left: 100px;
+				position: relative;
 			}
 
 			#myExperience {
-				height: 100vh;
-				width: 100%;
+				height: 60vh;
+				width: 100vw;
 			}
 			.lil-gui .start-button {
 				background-color: red;
+			}
+
+			.ui-button {
+				color: rgb(235, 235, 235);
+				background-color: rgb(66, 66, 66);
+				box-sizing: border-box;
+				text-transform: none;
+				font-size: 11px;
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+				border-style: solid;
+				border-radius: 2px;
+				border-width: 1px;
+				height: 20px;
+				margin: 2px;
 			}
 		</style>
 
@@ -54,11 +73,14 @@
 
 		<div class="container">
 			<canvas id="myExperience"></canvas>
-			<div class="chart-container">
-				<canvas id="myChart"></canvas>
+			<div class="bottom-container">
 				<div class="chart-controls">
-					<button id="resetZoom">Reset Zoom</button>
-					<button id="clearButton">Clear</button>
+					<button id="resetZoom" class="ui-button">Reset Zoom</button>
+					<button id="clearButton" class="ui-button">Clear</button>
+					<button id="downloadCSVButton" class="ui-button">Download CSV</button>
+				</div>
+				<div class="chart-container">
+					<canvas id="myChart"></canvas>
 				</div>
 			</div>
 		</div>
@@ -92,6 +114,8 @@
 
 				const frameRate = 60;
 
+				// Run / Pause button
+
 				params.enabled = () => {
 					if ( startButton._name === 'Run' ) {
 
@@ -99,6 +123,7 @@
 						physics.start();
 						startButtonDom.style.backgroundColor = 'red';
 						initialStateFolder.show( false );
+						presetFolder.show( false );
 						
 					} else {
 
@@ -106,6 +131,7 @@
 						physics.stop();
 						startButtonDom.style.backgroundColor = 'green';
 						initialStateFolder.show( true );
+						presetFolder.show( true );
 
 					}
 				}
@@ -286,25 +312,28 @@
 
 				// Graphs
 
+				const graphFolder = gui.addFolder( 'Graphs' );
+
 				params.showGraphs = () => {
 					
 					if ( graphUI._name === 'Show Graphs' ) {
 						graphUI.name( 'Hide Graphs' );
-						document.querySelector( '.chart-container' ).style.display = 'block';
+						document.querySelector( '.bottom-container' ).style.display = 'flex';
+						document.querySelector( '.bottom-container' ).style.height = '40vh';
 						document.querySelector( '.chart-container' ).style.height = '40vh';
 						document.getElementById( 'myExperience' ).style.height = '60vh';
 						updateRendererSize();
 					}
 					else {
 						graphUI.name( 'Show Graphs' );
-						document.querySelector( '.chart-container' ).style.display = 'none';
+						document.querySelector( '.bottom-container' ).style.display = 'none';
 						document.getElementById( 'myExperience' ).style.height = '100vh';
 						updateRendererSize();
 					}
 				}
 
-				const graphUI = gui.add( params, 'showGraphs' )
-					.name( 'Show Graphs' );
+				const graphUI = graphFolder.add( params, 'showGraphs' )
+					.name( 'Hide Graphs' );
 
 				const data = {
 					datasets: [{
@@ -409,9 +438,16 @@
 					clearGraph();
 				}
 
+				downloadCSVButton.onclick = () => {
+
+					downloadCSV();
+				}
+
 				// Presets
 
 				let preset = null;
+
+				const presetFolder = gui.addFolder( 'Presets' );
 
 				params.savePreset = function () {
 					preset = gui.save();
@@ -425,8 +461,8 @@
 					gui.load( preset );
 				}
 
-				gui.add( params, 'savePreset' ).name( 'Save Preset' );
-				gui.add( params, 'loadPreset' ).name( 'Load Preset' );
+				presetFolder.add( params, 'savePreset' ).name( 'Save Preset' );
+				presetFolder.add( params, 'loadPreset' ).name( 'Load Preset' );
 
 			}
 
@@ -451,6 +487,27 @@
 				updateRendererSize();
 
 			} );
+
+			function downloadCSV() {
+
+				const data0 = myChart.data.datasets[0].data;
+				const data1 = myChart.data.datasets[1].data;
+
+				let csv = 'time,angleOutput,angleInput\n';
+
+				data0.forEach( ( entry, idx ) => {
+
+					csv += entry.x + ',' + entry.y + ',' + data1[ idx ].y + '\n';
+
+				} );
+
+				const blob = new Blob( [ csv ], { type: 'text/csv' } );
+				const url = URL.createObjectURL( blob );
+				const link = document.createElement( 'a' );
+				link.download = 'data.csv';
+				link.href = url;
+				link.click();
+			}
 
 		</script>
 	</body>
