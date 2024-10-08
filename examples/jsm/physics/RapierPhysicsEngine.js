@@ -3,7 +3,7 @@ import { Vector3, Quaternion, Matrix4,
 
 const RAPIER_PATH = 'https://cdn.skypack.dev/@dimforge/rapier3d-compat@0.12.0';
 
-const frameRate = 60;
+let frameRate = null;
 let intervalId = null;
 
 const _scale = new Vector3( 1, 1, 1 );
@@ -388,7 +388,9 @@ async function RapierPhysics() {
     }
 
    // animate
-   function start() {
+   function start( newFrameRate = 60 ) {
+
+       frameRate = newFrameRate;
 
        intervalId = setInterval( step, 1000 / frameRate );
        

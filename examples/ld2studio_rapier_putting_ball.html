@@ -112,26 +112,42 @@
 
 				physics = await RapierPhysics();
 
-				const frameRate = 60;
-
 				// Run / Pause button
+
+				let timer = null;
 
 				params.enabled = () => {
 					if ( startButton._name === 'Run' ) {
 
 						startButton.name( 'Pause' );
-						physics.start();
+						physics.start( params.ticks );
 						startButtonDom.style.backgroundColor = 'red';
 						initialStateFolder.show( false );
 						presetFolder.show( false );
+						physicsFolder.show( false );
+
+						if ( params.timeout ) {
+							console.log( 'Timeout: ', params.timeoutValue * 1000 );
+							timer = setTimeout( () => {
+								startButton.name( 'Run' );
+								physics.stop();
+								startButtonDom.style.backgroundColor = 'green';
+								initialStateFolder.show( true );
+								presetFolder.show( true );
+								physicsFolder.show( true );
+
+							}, params.timeoutValue * 1000 );
+						}
 						
 					} else {
-
+						if (params.timeout) clearTimeout( timer );
+						
 						startButton.name( 'Run' );
 						physics.stop();
 						startButtonDom.style.backgroundColor = 'green';
 						initialStateFolder.show( true );
 						presetFolder.show( true );
+						physicsFolder.show( true );
 
 					}
 				}
@@ -141,6 +157,20 @@
 				// Styling start button
 				const startButtonDom = startButton.domElement.querySelector( 'button' );
 				startButtonDom.style.backgroundColor = 'green';
+
+				// Run timeout
+
+				params.timeout = false;
+				const timeoutController = gui.add( params, 'timeout' )
+					.name( 'Timeout' )
+					.onChange( ( val ) => timeoutValueController.show( val ) );
+
+				params.timeoutValue = 10.0;
+				const timeoutValueController =gui.add( params, 'timeoutValue', 0.0, 20.0, 0.01 )
+					.name( 'Timeout Value (s)' )
+					.onChange( ( val ) => console.log( val ) );
+
+				timeoutValueController.show( false );
 				
 
 				// params.debug = false;
@@ -218,7 +248,7 @@
 
 				params.tiltAngle = 0.0;
 				gui.add( params, 'tiltAngle', -180, 180, 0.1 )
-					.name( 'Input Angle' );
+					.name( 'Input Angle (°)' );
 
 				const modelFolder = gui.addFolder( 'Model' );
 				
@@ -272,7 +302,7 @@
 				params.angleInitialState = 0.0;
 
 				initialStateFolder.add( params, 'angleInitialState', -180, 180, 0.1 )
-					.name( 'Initial Angle' )
+					.name( 'Initial Angle (°)' )
 					.onChange( () => {
 						tiltBoardMesh.rotation.z = params.angleInitialState * Math.PI / 180;
 					})
@@ -293,12 +323,6 @@
 
 					physics.start();
 					physics.setMeshRotation( tiltBoardMesh, tiltBoardMesh.quaternion );
-					// physics.setMeshRotation( tiltBoardMesh,
-					// 	new THREE.Quaternion()
-					// 		.setFromAxisAngle(
-					// 			new THREE.Vector3( 0, 0, 1 ),
-					// 			params.angleInitialState * Math.PI / 180 )
-					// );
 					physics.stop();
 
 					current_time = 0.0;
@@ -309,6 +333,14 @@
 
 				initialStateFolder.add( params, 'applyInitialState' )
 					.name( 'Apply Initial State' );
+
+				// Physics setup
+
+				const physicsFolder = gui.addFolder( 'Physics' );
+
+				params.ticks = 60;
+				physicsFolder.add( params, 'ticks', 1, 480, 1 )
+					.name( 'Ticks/s' );
 
 				// Graphs
 
