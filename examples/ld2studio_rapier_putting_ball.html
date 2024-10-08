@@ -534,11 +534,23 @@
 				} );
 
 				const blob = new Blob( [ csv ], { type: 'text/csv' } );
-				const url = URL.createObjectURL( blob );
-				const link = document.createElement( 'a' );
-				link.download = 'data.csv';
-				link.href = url;
-				link.click();
+
+				const reader = new FileReader();
+				reader.onload = ( event ) => {
+					
+					const link = document.createElement( 'a' );
+					link.download = 'data.csv';
+					link.href = event.target.result;
+					link.click();
+				}
+
+				reader.readAsDataURL( blob );
+
+				// const url = URL.createObjectURL( blob );
+				// const link = document.createElement( 'a' );
+				// link.download = 'data.csv';
+				// link.href = url;
+				// link.click();
 			}
 
 		</script>
