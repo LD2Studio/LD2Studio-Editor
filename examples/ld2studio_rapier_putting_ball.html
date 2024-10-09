@@ -120,14 +120,14 @@
 					if ( startButton._name === 'Run' ) {
 
 						startButton.name( 'Pause' );
-						physics.start( params.ticks );
+						physics.start( 1 / params.samplingTime );
 						startButtonDom.style.backgroundColor = 'red';
 						initialStateFolder.show( false );
 						presetFolder.show( false );
 						physicsFolder.show( false );
 
 						if ( params.timeout ) {
-							console.log( 'Timeout: ', params.timeoutValue * 1000 );
+							
 							timer = setTimeout( () => {
 								startButton.name( 'Run' );
 								physics.stop();
@@ -158,19 +158,18 @@
 				const startButtonDom = startButton.domElement.querySelector( 'button' );
 				startButtonDom.style.backgroundColor = 'green';
 
-				// Run timeout
+				// Timeout
 
-				params.timeout = false;
+				params.timeout = true;
 				const timeoutController = gui.add( params, 'timeout' )
 					.name( 'Timeout' )
 					.onChange( ( val ) => timeoutValueController.show( val ) );
 
-				params.timeoutValue = 10.0;
+				params.timeoutValue = 1.0;
 				const timeoutValueController =gui.add( params, 'timeoutValue', 0.0, 20.0, 0.01 )
 					.name( 'Timeout Value (s)' )
-					.onChange( ( val ) => console.log( val ) );
 
-				timeoutValueController.show( false );
+				timeoutValueController.show( params.timeout );
 				
 
 				// params.debug = false;
@@ -252,11 +251,11 @@
 
 				const modelFolder = gui.addFolder( 'Model' );
 				
-				params.ksi = 0.0;
-				modelFolder.add( params, 'ksi', 0, 10, 0.01 ).name('ksi')
+				params.ksi = 0.5;
+				modelFolder.add( params, 'ksi', 0, 10, 0.01 ).name('ksi');
 
-				params.pulsation = 1.0;
-				modelFolder.add( params, 'pulsation', 0, 100, 0.01 ).name('pulsation (rad/s)')
+				params.pulsation = 10.0;
+				modelFolder.add( params, 'pulsation', 0, 100, 0.01 ).name('pulsation (rad/s)');
 
 				const tiltAxes = new THREE.AxesHelper();
 				tiltBoardMesh.add( tiltAxes );
@@ -270,6 +269,10 @@
 				let current_time = 0.0;
 
 				physics.onUpdate( ( delta ) => {
+
+					updateGraph( current_time,
+						tiltBoardMesh.rotation.z * 180 / Math.PI,
+						params.tiltAngle );
 					
 					// console.log( delta );
 					// console.log( tiltBoardMesh.rotation.z * 180 / Math.PI);
@@ -287,10 +290,6 @@
 					new THREE.Vector3( 0, 0, vel ) );
 					
 					prev_vel = vel;
-					
-					updateGraph( current_time,
-						tiltBoardMesh.rotation.z * 180 / Math.PI,
-						params.tiltAngle );
 
 					current_time += delta;
 				})
@@ -338,9 +337,9 @@
 
 				const physicsFolder = gui.addFolder( 'Physics' );
 
-				params.ticks = 60;
-				physicsFolder.add( params, 'ticks', 1, 480, 1 )
-					.name( 'Ticks/s' );
+				params.samplingTime = 0.01;
+				physicsFolder.add( params, 'samplingTime', 0.001, 0.1, 0.001 )
+					.name( 'Sampling Time' )
 
 				// Graphs
 
